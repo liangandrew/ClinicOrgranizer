@@ -1,0 +1,8 @@
+#byte compiled files
+__pycache__/
+
+#instance folder secrets
+/instance
+
+#venv
+venv
