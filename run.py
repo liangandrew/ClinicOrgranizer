@@ -1,8 +1,11 @@
-import os
-from api import create_app
+# run.py
 
-config_name = os.getenv('FLASK_CONFIG')
-app = create_app(config_name)
+# import os
+
+from app import create_app
+
+# config_name = os.getenv('FLASK_CONFIG')
+app = create_app(__name__)
 
 
 if __name__ == '__main__':
