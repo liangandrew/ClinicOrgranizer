@@ -1,4 +1,5 @@
 from peewee import *
+from flask import request
 
 #create peewee databse instance
 db=SqliteDatabase('clinics.db', pragmas={
@@ -20,6 +21,8 @@ class Patient(BaseModel):
     dob=DateTimeField()
     phone_number=IntegerField(unique=True)
 
+
+
 class Org(BaseModel):
     org_id=AutoField()  #primary key id
     phone_number=IntegerField(unique=True)
@@ -32,10 +35,10 @@ class Appointment(BaseModel):
     ap_id=AutoField()   #pk
     p=ForeignKeyField(Patient,backref='appointments',on_update='CASCADE',on_delete='CASCADE')
     o=ForeignKeyField(Org,backref='appointments',on_delete='CASCADE')
-    date_created= DateField()
+    date=DateField()
+    created= DateField()
     start_time=TimeField()
-    end_time=TimeField()
-    reason_for_visit=TextField()
+    reason_for_visit=TextField(null=True)
     is_cancelled=BooleanField()
 
 #helper function to create the tables in interpreter. one time thing
@@ -49,36 +52,54 @@ data={
             'email':'joe@gmail.com',
             'name':'joe mama',
             'dob':'1993-02-12',
-            'phone':'1283048274'
+            'phone_number':'1283048274'
         },
         {
             'email':'john@gmail.com',
             'name':'john mama',
             'dob':'1993-03-13',
-            'phone':'3810472047'
+            'phone_number':'3810472047'
         },
         {
             'email':'jane@hotmail.com',
             'name':'jane mama',
             'dob':'1983-05-16',
-            'phone':'9183759382'
+            'phone_number':'9183759382'
         }
     ],
     'orgs':[
         {
-            'phone':'123456792',
+            'phone_number':'123456792',
             'name':'chinatown dentist',
             'email':'cdentistry@yahoo.com'
         },
         {
-            'phone':'8103729101',
+            'phone_number':'8103729101',
             'name':'downtown clinic',
             'email':'dtownlax@gmail.com'
         }
     ],
     'apts':[
-        'p':''
+        {
+            'p':1,
+            'o':1,
+            "date":'2020-06-24',
+            'created':'2020-06-20',
+            'start_time':'01:00:00',
+            'reason':'checkup',
+            'cancelled':'False'
+        }
     ]
 }
+
 def add_junk_data():
-    pass
+    with db.atomic():
+        Patient.insert_many(data['pats']).execute()
+        Org.insert_many(data['orgs']).execute()
+        Appointment.create(p=data['apts'][0]['p'],
+        o=data['apts'][0]['o'],
+        date=data['apts'][0]['date'],
+        created=data['apts'][0]['created'],
+        start_time=data['apts'][0]['start_time'],
+        reason_for_visit=data['apts'][0]['reason'],
+        is_cancelled=data['apts'][0]['cancelled'])
