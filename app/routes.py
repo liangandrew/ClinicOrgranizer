@@ -6,9 +6,10 @@ import bcrypt
 bp = Blueprint('api', __name__)
 
 def authenticate(user):
+    #use sessions or jwt token
     print('authenticate')
 
-@bp.route('/register_patient',methods=['POST'])
+@bp.route('/patient/register',methods=['POST'])
 def register():
     data=request.get_json()
     name=data['name']
@@ -36,6 +37,29 @@ def register():
     except IntegrityError:
         flash('Email or phone number already taken')
         return 'try again'  #redirect to register again
+
+
+@bp.route('/patient/login', methods=['POST'])
+def login():
+    #fetch login info from request
+    email = request.get_json()['email']
+    password = request.get_json()['password']
+
+    #check if the password is correct
+    try:
+        patient=Patient.get(
+            email=email
+        )
+        if bcrypt.checkpw(password.encode('utf8'),patient.password.encode('utf-8')):
+            #password matches
+            authenticate(patient)
+            return 'success'    #redirect to /homescreen
+        else:
+            flash('Invalid username and password')
+            
+    except Patient.DoesNotExist:
+        flash('The email is not registered')
+    return 'try again'  #redirect to login again
 
 @bp.route('/get_patient/<int:id>')
 def get_patient(id):
