@@ -9,6 +9,8 @@ def authenticate(user):
     #use sessions or jwt token
     print('authenticate')
 
+
+#register patient
 @bp.route('/patient/register',methods=['POST'])
 def register_patient():
     data=request.get_json()
@@ -48,6 +50,7 @@ def register_patient():
         return jsonify({'error':'Email and/or phone number already registered'})
 
 
+#patient login
 @bp.route('/patient/login', methods=['POST'])
 def patient_login():
     #fetch login info from request
@@ -71,6 +74,7 @@ def patient_login():
     return jsonify({'try again'})  #redirect to login again
 
 
+#register orgs
 @bp.route('/org/register',methods=['POST'])
 def register_org():
     data=request.get_json()
@@ -107,6 +111,7 @@ def register_org():
         return jsonify({"error":'phone number and/or email already registered'})  #redirect to register again
 
 
+#login for orgs
 @bp.route('/org/login', methods=['POST'])
 def org_login():
     #fetch login info from request
@@ -130,7 +135,16 @@ def org_login():
     return jsonify({'try again'})  #redirect to login again
 
 
+#allows org to make an appointment
+@bp.route('/make_appointment')
+def make_appointment():
+    pass
 
+
+#orgs can edit appointment
+@bp.route('/edit_appointment')
+def edit_appointment():
+    pass
 
 
 @bp.route('/get_patient/<int:id>')
