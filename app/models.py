@@ -19,13 +19,13 @@ class Patient(BaseModel):
     email=CharField(unique=True)
     name=CharField()
     dob=DateField()
-    phone_number=IntegerField(unique=True)
+    phone_number=CharField(unique=True)
     password=CharField()
 
 
 class Org(BaseModel):
     org_id=AutoField()  #primary key id
-    phone_number=IntegerField(unique=True)
+    phone_number=CharField(unique=True)
     name=CharField()
     email=CharField(unique=True)
     password=CharField()
