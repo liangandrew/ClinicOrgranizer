@@ -65,7 +65,7 @@ class Register extends Component{
                     <div className="col-md-6 mt-5 mx-auto">
                         <form onSubmit={this.handleSubmit}>
                             <h2>Register </h2>
-
+                            <br></br>
                             <div className="form-group">
                                 <label htmlFor="name">Name</label>
                                 <input type="text" className="form-control" name="name" placeholder="Enter name"
