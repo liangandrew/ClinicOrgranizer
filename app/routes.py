@@ -5,10 +5,6 @@ import bcrypt
 
 bp = Blueprint('api', __name__)
 
-def authenticate(user):
-    #use sessions or jwt token
-    print('authenticate')
-
 
 #register patient
 @bp.route('/patient/register',methods=['POST'])
@@ -40,9 +36,6 @@ def register_patient():
                 password=password
             )
 
-        #authenticate patient
-        authenticate(patient)
-
         return jsonify({'success':'account registered successfully'})    #redired to /login page
 
     except IntegrityError:
@@ -64,7 +57,8 @@ def patient_login():
         )
         if bcrypt.checkpw(password.encode('utf8'),patient.password.encode('utf-8')):
             #password matches
-            authenticate(patient)
+            # authenticate with JWT
+
             return jsonify({'success':'login successful'})    #redirect to /homescreen
         else:
             flash('Invalid username and password')
@@ -101,9 +95,6 @@ def register_org():
                 password=password
             )
 
-        #authenticate patient
-        authenticate(org)
-
         return 'success'    #redired to /login page
 
     except IntegrityError:
@@ -125,7 +116,8 @@ def org_login():
         )
         if bcrypt.checkpw(password.encode('utf8'),org.password.encode('utf-8')):
             #password matches
-            authenticate(org)
+            # authenticate with JWT
+
             return jsonify({'success':'login successful'})    #redirect to /homescreen
         else:
             flash('Invalid username and password')

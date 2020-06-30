@@ -1,19 +1,31 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import {BrowserRouter as Router, Route} from 'react-router-dom'
-import Register from './components/Register'
-import Login from './components/Login'
+import React, { Component } from "react";
+import logo from "./logo.svg";
+import "./App.css";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import Register from "./components/Register";
+import Login from "./components/Login";
+import Welcome from "./components/Welcome";
+import Navbar from "./components/Navbar";
 
-function App() {
-  return (
-    <div className="App">
+class App extends Component {
+  constructor() {
+    super();
+  }
+
+  render() {
+    return (
       <Router>
-        <Route exact path="/" component={Register}/>
-        <Route exact path="/login" component={Login} />
+        <div className="App">
+          <Navbar />
+          <Route exact path="/" component={Welcome} />
+          <div className="containter">
+            <Route exact path="/register" component={Register} />
+            <Route exact path="/login" component={Login} />
+          </div>
+        </div>
       </Router>
-    </div>
-  );
+    );
+  }
 }
 
 export default App;
