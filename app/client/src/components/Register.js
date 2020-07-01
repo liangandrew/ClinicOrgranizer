@@ -21,8 +21,8 @@ class Register extends Component {
         const value =
             e.target.type === "checkbox" ? e.target.checked : e.target.value;
         this.setState({ [e.target.name]: value });
-        console.log(e.target.value);
-        console.log(this.state);
+        // console.log(e.target.value);
+        // console.log(this.state);
     };
 
     handleSubmit = (e) => {
@@ -30,8 +30,22 @@ class Register extends Component {
         e.preventDefault();
 
         //make sure fields are filled in correctly
-        
-
+        let is_org=this.state.org
+        if(is_org){
+            //don't need to check dob
+            if(this.state.name===''||this.state.email===''||this.state.password===''||this.state.phone_number===''){
+                console.log('missing fields')
+                return
+            }
+        }
+        else{
+            //check dob
+            if(this.state.name===''||this.state.email===''||this.state.password===''||this.state.phone_number===''||
+            this.state.dob===''){
+                console.log('missing fields')
+                return
+            }
+        }
 
         const newUser = {
             name: this.state.name,
@@ -60,7 +74,7 @@ class Register extends Component {
                                     type="text"
                                     className="form-control"
                                     name="name"
-                                    pattern="[A-Za-z]"
+                                    pattern="^[a-zA-Z]+( [a-zA-Z_]+)*$"
                                     placeholder="Enter name"
                                     value={this.state.name}
                                     onChange={this.handleChange}
