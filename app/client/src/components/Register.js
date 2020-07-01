@@ -43,20 +43,6 @@ class Register extends Component{
             register(newUser).then(res=>{
                 this.props.history.push('/login')
             })
-        // }
-        // else{
-        //     //register patient
-        //     const newPat={
-        //         name:this.state.name,
-        //         email:this.state.email,
-        //         phone_number:this.state.phone_number,
-        //         dob:this.state.dob,
-        //         password:this.state.password
-        //     }
-        //     register(newPat).then(res=>{
-        //         this.props.history.push('/login')
-        //     })
-        // }
     }
     render(){
         return(
