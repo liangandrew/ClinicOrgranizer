@@ -1,9 +1,25 @@
-from flask import Blueprint, request, flash, jsonify
+from flask import Blueprint, request, flash, jsonify, session
+from functools import wraps
 from app.models import *
 from peewee import *
 import bcrypt
 
 bp = Blueprint('api', __name__)
+
+#add logged in user to sessions and store their email and whether they are an org or not
+#to know which table to check
+def authenticate(user,is_org):
+    session['logged_in'] = True
+    session['user_email'] = user.email
+    session['is_org'] = is_org
+
+
+#logout function
+#removes user from session
+@bp.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    return jsonify({'result':'success'})
 
 
 #register patient
@@ -57,15 +73,13 @@ def patient_login():
         )
         if bcrypt.checkpw(password.encode('utf8'),patient.password.encode('utf-8')):
             #password matches
-            # authenticate with JWT
+            # authenticate
+            authenticate(patient,False)
 
-            return jsonify({'success':'login successful'})    #redirect to /homescreen
-        else:
-            flash('Invalid username and password')
+            return jsonify({'result':'success'})   
             
     except Patient.DoesNotExist:
-        flash('The email is not registered')
-    return jsonify({'try again'})  #redirect to login again
+        return jsonify({'result':'error'})  #redirect to login again
 
 
 #register orgs
@@ -98,7 +112,6 @@ def register_org():
         return 'success'    #redired to /login page
 
     except IntegrityError:
-        flash('Email or phone number already taken')
         return jsonify({"error":'phone number and/or email already registered'})  #redirect to register again
 
 
@@ -116,25 +129,38 @@ def org_login():
         )
         if bcrypt.checkpw(password.encode('utf8'),org.password.encode('utf-8')):
             #password matches
-            # authenticate with JWT
+            # authenticate
+            authenticate(org,True)
 
-            return jsonify({'success':'login successful'})    #redirect to /homescreen
-        else:
-            flash('Invalid username and password')
+            return jsonify({'result':'success'})    #redirect to /homescreen
             
     except Org.DoesNotExist:
-        flash('The email is not registered')
-    return jsonify({'try again'})  #redirect to login again
+        return jsonify({'result':'error'})  #redirect to login again
+
+
+def get_current_user():
+    if session.get('logged_in'):
+        if session.get('is_org')==True:
+            return Org.get(Org.email==session['user_email'])
+        else:
+            return Patient.get(Patient.email==session['user_email'])
+    else:
+        return jsonify({'result':'error'})
 
 
 #allows org to make an appointment
-@bp.route('/make_appointment')
+@bp.route('/make_appointment',methods=['POST'])
 def make_appointment():
-    pass
+    #make sure user is logged in and is an org to be able to make an appointment
+    if not (session.get('logged_in') and session.get('is_org')):
+        return jsonify({'result':'error'})
+    else:
+        data=request.get_json()
+        return jsonify({'result':'success'})    ########################## NOT DONE ##############################
 
 
 #orgs can edit appointment
-@bp.route('/edit_appointment')
+@bp.route('/edit_appointment',methods=['POST'])
 def edit_appointment():
     pass
 

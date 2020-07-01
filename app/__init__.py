@@ -10,11 +10,6 @@ def create_app(__name__):
     app.register_blueprint(api_bp, url_prefix='/api')
 
     CORS(app)
-    
-    # temporary route
-    @app.route('/')
-    def hello_world():
-        return 'Hello, World!'
 
     return app
 
