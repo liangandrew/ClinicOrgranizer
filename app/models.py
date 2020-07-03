@@ -1,9 +1,8 @@
 from peewee import *
-from playhouse.sqlite_ext import *
 from datetime import datetime
 
 #create peewee databse instance
-db=SqliteExtDatabase('clinics.db', pragmas={
+db=SqliteDatabase('clinics.db', pragmas={
     'journal_mode': 'wal',
     'cache_size': -1 * 32000,  # 64MB
     'foreign_keys': 1,
@@ -36,14 +35,14 @@ class Appointment(BaseModel):
     ap_id=AutoField()   #pk
     p=ForeignKeyField(Patient,backref='appointments',on_update='CASCADE',on_delete='CASCADE')
     o=ForeignKeyField(Org,backref='appointments',on_delete='CASCADE')
-    date=DateField()
-    created= DateField(default=datetime.today().strftime('%Y-%m-%d'))
-    start_time=TimeField()
+    created= DateTimeField(default=datetime.now)
+    start_time=DateTimeField()
     reason_for_visit=TextField(null=True)
     is_cancelled=BooleanField(default=False)
-    reminders=JSONField(null=True)
-    #reminders would be a dict/list of tuples -->   { (datetime, sent) }, where the first index is a datetime object
-    #and the second index is a boolean, whether the reminder has been sent
+    reminders=TextField(null=True)
+    #reminders would be a json serialized list of tuples -->   [(datetime, sent)]
+    # where the first index is a datetime object 
+    # and the second index is a boolean, whether the reminder has been sent
 
 #helper function to create the tables in interpreter. one time thing
 def create_tables():

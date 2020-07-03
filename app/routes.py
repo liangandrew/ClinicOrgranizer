@@ -152,11 +152,37 @@ def get_current_user():
 @bp.route('/make_appointment',methods=['POST'])
 def make_appointment():
     #make sure user is logged in and is an org to be able to make an appointment
-    if not (session.get('logged_in') and session.get('is_org')):
-        return jsonify({'result':'error'})
-    else:
-        data=request.get_json()
-        return jsonify({'result':'success'})    ########################## NOT DONE ##############################
+
+    # if not (session.get('logged_in') and session.get('is_org')):
+    #     return jsonify({'result':'error'})
+    # else:
+        try:
+            data=request.get_json()
+            apt={}
+
+            # org_email=session['user_email']
+            org_email=data['org_email']
+            org_id=Org.get(Org.email==org_email).org_id
+            apt['o_id']=org_id
+
+            patient_email=data['patient_email']
+            patient_id=Patient.get(Patient.email==patient_email).patient_id
+            apt['p_id']=patient_id
+
+            date=data['appointment_date']
+            apt['date']=date
+            start_time=data['start_time']
+            apt['start_time']=start_time
+
+            if data['reason'] != "":
+                apt['reason_for_visit']=data['reason']
+            if data['reminders'] != "":
+                apt['reminders']=data['reminders']
+
+            Appointment.create(**apt)            
+        except DoesNotExist:
+            return jsonify({'result':'error'})
+        return jsonify({'result':'success'})
 
 
 #orgs can edit appointment
