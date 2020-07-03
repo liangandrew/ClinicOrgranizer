@@ -105,7 +105,6 @@ def add_junk_data():
         Org.insert_many(data['orgs']).execute()
         Appointment.create(p=data['apts'][0]['p'],
         o=data['apts'][0]['o'],
-        date=data['apts'][0]['date'],
         created=data['apts'][0]['created'],
         start_time=data['apts'][0]['start_time'],
         reason_for_visit=data['apts'][0]['reason'],
