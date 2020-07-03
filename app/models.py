@@ -36,7 +36,7 @@ class Appointment(BaseModel):
     p=ForeignKeyField(Patient,backref='appointments',on_update='CASCADE',on_delete='CASCADE')
     o=ForeignKeyField(Org,backref='appointments',on_delete='CASCADE')
     created= DateTimeField(default=datetime.now)
-    start_time=DateTimeField()
+    start_time=DateTimeField(unique=True)
     reason_for_visit=TextField(null=True)
     is_cancelled=BooleanField(default=False)
     reminders=TextField(null=True)
