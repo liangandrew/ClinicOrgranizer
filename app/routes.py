@@ -2,7 +2,11 @@ from flask import Blueprint, request, flash, jsonify, session
 from functools import wraps
 from app.models import *
 from peewee import *
+from datetime import datetime, timedelta
 import bcrypt
+import pytz
+import json
+
 
 bp = Blueprint('api', __name__)
 
@@ -157,6 +161,7 @@ def make_appointment():
     #     return jsonify({'result':'error'})
     # else:
         try:
+            # org=get_current_user()
             data=request.get_json()
             apt={}
 
@@ -164,25 +169,58 @@ def make_appointment():
             org_email=data['org_email']
             org_id=Org.get(Org.email==org_email).org_id
             apt['o_id']=org_id
+            # org_id=org.org_id
+            # apt['o_id']=org_id
 
             patient_email=data['patient_email']
             patient_id=Patient.get(Patient.email==patient_email).patient_id
             apt['p_id']=patient_id
 
-            date=data['appointment_date']
-            apt['date']=date
-            start_time=data['start_time']
-            apt['start_time']=start_time
+            date=data['appointment_time']
+            #date is in string format YYYY-mm-dd HH:MM:SS   format --> %Y-%m-%d %H:%M
+            #convert the string into a datetime object
+            apt_date=datetime.strptime(date,'%Y-%m-%d %H:%M')
+            #convert to UTC
+            apt_date_utc=apt_date.astimezone(pytz.UTC)
+            apt['start_time']=apt_date_utc
 
             if data['reason'] != "":
                 apt['reason_for_visit']=data['reason']
-            if data['reminders'] != "":
-                apt['reminders']=data['reminders']
+
+            #have default reminder for two days prior if the appointment is in more than two days
+            #else if it's in less than two days make a default one for two hours prior
+            curr_utc=datetime.now().astimezone(pytz.UTC)
+            time_diff=apt_date_utc-curr_utc
+
+            two_days=timedelta(days=2)
+            one_day=timedelta(days=1)
+            two_hours=timedelta(hours=2)
+            default_reminder=""
+            if time_diff > two_days:
+                default_reminder=apt_date_utc-two_days
+                #add default reminder into a list of tuples, serialize it into json and insert into dict and table
+                reminders=json.dumps([(default_reminder,False)],default=str)
+                apt['reminders']=reminders
+            elif time_diff == two_days:
+                default_reminder=apt_date_utc-one_day
+                reminders=json.dumps([(default_reminder,False)],default=str)
+                apt['reminders']=reminders
+            elif time_diff < two_days:
+                default_reminder=apt_date_utc-two_hours
+                reminders=json.dumps([(default_reminder,False)],default=str)
+                apt['reminders']=reminders
+            #else no default made reminder
 
             Appointment.create(**apt)            
         except DoesNotExist:
             return jsonify({'result':'error'})
         return jsonify({'result':'success'})
+
+######## in case i forget: get string for strptime by json.loads the reminder field, and loop through the list  ####
+#for rem in list2:
+#   print(datetime.strptime(rem[0][:16],"%Y-%m-%d %H:%M"))
+
+#editing appointments will also have to check and edit reminders
 
 
 #orgs can edit appointment
