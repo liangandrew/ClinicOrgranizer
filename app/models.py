@@ -91,7 +91,6 @@ data={
         {
             'p':1,
             'o':1,
-            "date":'2020-06-24',
             'created':'2020-06-20',
             'start_time':'01:00:00',
             'reason':'checkup',
