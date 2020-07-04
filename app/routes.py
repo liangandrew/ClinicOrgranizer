@@ -246,8 +246,9 @@ def get_all_appointments():
                 user=Patient.get(Patient.email==user_email)
 
             appointments=[]
+            ex=[Appointment.o.password,Appointment.p.password]
             for apt in user.appointments:
-                appointments.append(model_to_dict(apt))
+                appointments.append(model_to_dict(apt,exclude=ex))
 
             return jsonify(appointments)
         except DoesNotExist:
@@ -258,8 +259,30 @@ def get_all_appointments():
 @bp.route('/appointments/get/<int:id>')
 def get_single_appointment(id):
     #make sure user is logged in and has the appointment it requests for    i.e. a patient can't see apt of others
+    # if session.get('logged_in'):
+        #is_org=session['is_org']
+        #user_email=session['user_email']
     
-    pass
+    data=request.get_json()
+    is_org=data['is_org']
+    user_email=data['user_email']
+    user=object()
+    try:
+        if is_org:
+            #check user email in org table
+            user=Org.get(Org.email==user_email)
+        else:
+            user=Patient.get(Patient.email==user_email)
+
+        #list fields not to include in response     ex. passwords
+        ex=[Appointment.o.password,Appointment.p.password]
+
+        for apt in user.appointments:
+            if apt.ap_id==id:
+                return jsonify(model_to_dict(apt,exclude=ex))
+    except DoesNotExist:
+        return jsonify({'result':'error'})
+    
 
 #orgs delete appointment
 @bp.route('/appointments/delete/<int:id>', methods=['DELETE'])
