@@ -2,6 +2,7 @@ from flask import Blueprint, request, flash, jsonify, session
 from functools import wraps
 from app.models import *
 from peewee import *
+from playhouse.shortcuts import model_to_dict, dict_to_model
 from datetime import datetime, timedelta
 import bcrypt
 import pytz
@@ -223,29 +224,48 @@ def make_appointment():
 #editing appointments will also have to check and edit reminders
 
 
+#Read resource
+@bp.route('/get_all_appointments',methods=['GET'])
+def get_all_appointments():
+    #protected route, make sure user is logged in
+
+    # if session.get('logged_in'):
+        #is_org=session['is_org']
+        #user_email=session['user_email']
+        
+        data=request.get_json()
+        is_org=data['is_org']
+        user_email=data['user_email']
+
+        user=object()
+        try:
+            if is_org:
+                #check user email in org table
+                user=Org.get(Org.email==user_email)
+            else:
+                user=Patient.get(Patient.email==user_email)
+
+            appointments=[]
+            for apt in user.appointments:
+                appointments.append(model_to_dict(apt))
+
+            return jsonify(appointments)
+        except DoesNotExist:
+            return jsonify({'result':'error'})
+    
+
 #orgs can edit appointment
 @bp.route('/edit_appointment',methods=['POST'])
 def edit_appointment():
     pass
 
 
-@bp.route('/get_patient/<int:id>')
-def get_patient(id):
-    try:
-        p=Patient.get_by_id(id)
-    except DoesNotExist:
-        #patient doesn't exist
-        return 'patient does not exit'
-    else:
-        #does exist, make a response in dict struct
-        pat={
-            'email':p.email,
-            'name':p.name,
-            'dob':p.dob,
-            'phone_number':p.phone_number
-        }
-        res={
-            'status':200,
-            'patient':pat
-        }
-        return res,res['status']
+#orgs delete appointment
+@bp.route('/delete_appointment', methods=['POST'])
+def delete_appointment():
+    pass
+
+
+@bp.route('/show_patient_info')
+def get_patient():
+    pass
