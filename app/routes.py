@@ -225,14 +225,14 @@ def make_appointment():
 
 
 #Read resource
-@bp.route('/get_all_appointments',methods=['GET'])
+@bp.route('/appointments/get_all')
 def get_all_appointments():
     #protected route, make sure user is logged in
 
     # if session.get('logged_in'):
         #is_org=session['is_org']
         #user_email=session['user_email']
-        
+
         data=request.get_json()
         is_org=data['is_org']
         user_email=data['user_email']
@@ -254,15 +254,27 @@ def get_all_appointments():
             return jsonify({'result':'error'})
     
 
+#get single appointment --> to edit
+@bp.route('/appointments/get/<int:id>')
+def get_single_appointment(id):
+    #make sure user is logged in and has the appointment it requests for    i.e. a patient can't see apt of others
+    
+    pass
+
+#orgs delete appointment
+@bp.route('/appointments/delete/<int:id>', methods=['DELETE'])
+def delete_appointment(id):
+    try:
+        apt=Appointment.get_by_id(id)
+        apt.delete_instance()
+        return jsonify({'result':'success'})
+    except DoesNotExist:
+        return jsonify({'result':'error'})
+
+
 #orgs can edit appointment
 @bp.route('/edit_appointment',methods=['POST'])
 def edit_appointment():
-    pass
-
-
-#orgs delete appointment
-@bp.route('/delete_appointment', methods=['POST'])
-def delete_appointment():
     pass
 
 
