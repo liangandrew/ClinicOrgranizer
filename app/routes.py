@@ -221,7 +221,7 @@ def make_appointment():
 #for rem in list2:
 #   print(datetime.strptime(rem[0][:16],"%Y-%m-%d %H:%M"))
 
-#editing appointments will also have to check and edit reminders
+#editing appointments will also have to check reminders
 
 
 #Read resource
@@ -253,6 +253,7 @@ def get_all_appointments():
             return jsonify(appointments)
         except DoesNotExist:
             return jsonify({'result':'error'})
+    # return jsonify({'result':'error'})
     
 
 #get single appointment --> to edit
@@ -263,43 +264,101 @@ def get_single_appointment(id):
         #is_org=session['is_org']
         #user_email=session['user_email']
     
-    data=request.get_json()
-    is_org=data['is_org']
-    user_email=data['user_email']
-    user=object()
-    try:
-        if is_org:
-            #check user email in org table
-            user=Org.get(Org.email==user_email)
-        else:
-            user=Patient.get(Patient.email==user_email)
+        data=request.get_json()
+        is_org=data['is_org']
+        user_email=data['user_email']
+        user=object()
+        try:
+            if is_org:
+                #check user email in org table
+                user=Org.get(Org.email==user_email)
+            else:
+                user=Patient.get(Patient.email==user_email)
 
-        #list fields not to include in response     ex. passwords
-        ex=[Appointment.o.password,Appointment.p.password]
+            #list fields not to include in response     ex. passwords
+            ex=[Appointment.o.password,Appointment.p.password]
 
-        for apt in user.appointments:
-            if apt.ap_id==id:
-                return jsonify(model_to_dict(apt,exclude=ex))
-    except DoesNotExist:
-        return jsonify({'result':'error'})
-    
+            for apt in user.appointments:
+                if apt.ap_id==id:
+                    return jsonify(model_to_dict(apt,exclude=ex))
+        except DoesNotExist:
+            return jsonify({'result':'error'})
+    #return jsonify({'result':'error'})
+
 
 #orgs delete appointment
 @bp.route('/appointments/delete/<int:id>', methods=['DELETE'])
 def delete_appointment(id):
-    try:
-        apt=Appointment.get_by_id(id)
-        apt.delete_instance()
-        return jsonify({'result':'success'})
-    except DoesNotExist:
+    if not session['logged_in']:
         return jsonify({'result':'error'})
+    else:
+        try:
+            org=Org.get(Org.email==session['user_email'])
+            for apt in org.appointments:
+                if apt.ap_id==id:
+                    apt.delete_instance()
+            # apt=Appointment.get_by_id(id)
+            # apt.delete_instance()
+            return jsonify({'result':'success'})
+        except DoesNotExist:
+            return jsonify({'result':'error'})
 
 
 #orgs can edit appointment
-@bp.route('/edit_appointment',methods=['POST'])
-def edit_appointment():
-    pass
+@bp.route('/edit_appointment/<int:id>',methods=['PUT'])
+def edit_appointment(id):
+    if not session['logged_in']:
+        return jsonify({'result':'error'})
+    else:
+        try:
+            org=Org.get(Org.email==session['user_email'])
+            for apt in org.appointments:
+                if apt.ap_id==id:
+                    data=request.get_json()
+                    #edit fields of the matching appointment to data from request
+                    #should only be able to edit certain fields,    i.e. can't change patient, or org, or created
+                    apt.start_time=data['start_time']
+                    apt.reason_for_visit=data['reason_for_visit']
+                    apt.is_cancelled=data['is_cancelled']
 
+                    #check reminders
+
+
+                    apt.save()
+                    break
+            return jsonify({'result':'success'})
+        except DoesNotExist:
+            return jsonify({'result':'error'})
+
+
+@bp.route('/reminder/create',methods=['POST'])
+#patients create reminders with a button on the screen with the appointment info 
+def create_reminder():
+    # pat=get_current_user()
+    # if type(pat) is not Patient:
+    #     return jsonify({'result':'error'})
+    
+    data=request.get_json()
+    reminder=data['reminder']
+    apid=data['appointment_id']
+    try:
+        # apt=Appointment.get(Appointment.ap_id==apid,Appointment.p==pat.patient_id)
+        apt=Appointment.get(Appointment.ap_id==apid)    #for testing
+
+        #reminder from frontend will be string in format
+        date=datetime.strptime(reminder,"%Y-%m-%d %H:%M")
+
+        reminders=json.loads(apt.reminders)
+        reminders.append((date,False))
+        reminders=json.dumps(reminders,default=str)
+        
+        #update appointment reminders
+        apt.reminders=reminders
+        apt.save()
+        return jsonify({'result':'success'})
+    except DoesNotExist:
+        return jsonify({'result':'error'})
+    
 
 @bp.route('/show_patient_info')
 def get_patient():
