@@ -330,13 +330,10 @@ def edit_appointment(id):
             new_apt_time=datetime.strptime(data['start_time'],"%Y-%m-%d %H:%M").astimezone(pytz.UTC)
 
             reminders=json.loads(appointment.reminders)
-            print(reminders)
             updated_reminders=[]
             for rem in reminders:
                 d=datetime.strptime(rem[0],'%Y-%m-%d %H:%M:%S%z')
-                print(new_apt_time)
-                print(d)
-                print(d>new_apt_time)
+
                 if d<new_apt_time and not data['is_cancelled']:
                     updated_reminders.append(rem)
             
