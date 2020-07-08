@@ -225,8 +225,8 @@ def make_appointment():
 
 
 #Read resource
-@bp.route('/appointments/get_all')
-def get_all_appointments():
+@bp.route('/appointments/get_upcoming')
+def get_upcoming_appointments():
     #protected route, make sure user is logged in
 
     # if session.get('logged_in'):
@@ -248,7 +248,8 @@ def get_all_appointments():
             appointments=[]
             ex=[Appointment.o.password,Appointment.p.password]
             for apt in user.appointments:
-                appointments.append(model_to_dict(apt,exclude=ex))
+                if apt.is_cancelled==False and datetime.now().astimezone(pytz.UTC) > apt.start_time:
+                    appointments.append(model_to_dict(apt,exclude=ex))
 
             return jsonify(appointments)
         except DoesNotExist:
@@ -268,19 +269,19 @@ def get_single_appointment(id):
         is_org=data['is_org']
         user_email=data['user_email']
         user=object()
+        appointment=object()
         try:
             if is_org:
                 #check user email in org table
                 user=Org.get(Org.email==user_email)
+                appointment=Appointment.get(Appointment.o_id==user.org_id,Appointment.ap_id==id)
             else:
                 user=Patient.get(Patient.email==user_email)
+                appointment=Appointment.get(Appointment.p_id==user.patient_id,Appointment.ap_id==id)
 
             #list fields not to include in response     ex. passwords
             ex=[Appointment.o.password,Appointment.p.password]
-
-            for apt in user.appointments:
-                if apt.ap_id==id:
-                    return jsonify(model_to_dict(apt,exclude=ex))
+            return jsonify(model_to_dict(appointment,exclude=ex))
         except DoesNotExist:
             return jsonify({'result':'error'})
     #return jsonify({'result':'error'})
@@ -294,38 +295,49 @@ def delete_appointment(id):
     else:
         try:
             org=Org.get(Org.email==session['user_email'])
-            for apt in org.appointments:
-                if apt.ap_id==id:
-                    apt.delete_instance()
-            # apt=Appointment.get_by_id(id)
-            # apt.delete_instance()
+            appointment=Appointment.get_by_id(id)
+            if appointment.o_id is not org.org_id:
+                return jsonify({'result':'error, apopintment not found'})
+            appointment.is_cancelled=True
+            appointment.save()
+
             return jsonify({'result':'success'})
         except DoesNotExist:
             return jsonify({'result':'error'})
 
 
 #orgs can edit appointment
-@bp.route('/edit_appointment/<int:id>',methods=['PUT'])
+@bp.route('/appointments/edit/<int:id>',methods=['PUT'])
 def edit_appointment(id):
-    if not session['logged_in']:
-        return jsonify({'result':'error'})
-    else:
+    # if not session['logged_in']:
+    #     return jsonify({'result':'error'})
+    # else:
         try:
-            org=Org.get(Org.email==session['user_email'])
-            for apt in org.appointments:
-                if apt.ap_id==id:
-                    data=request.get_json()
-                    #edit fields of the matching appointment to data from request
-                    #should only be able to edit certain fields,    i.e. can't change patient, or org, or created
-                    apt.start_time=data['start_time']
-                    apt.reason_for_visit=data['reason_for_visit']
-                    apt.is_cancelled=data['is_cancelled']
+            # org=Org.get(Org.email==session['user_email'])
+            org=Org.get(Org.email==request.get_json()['org_email'])
+            appointment=Appointment.get_by_id(id)
+            if appointment.o_id is not org.org_id:
+                return jsonify({'result':'error, apopintment not found'})
+            
+            data=request.get_json()
+            #edit fields of the matching appointment to data from request
+            #should only be able to edit certain fields,    i.e. can't change patient, or org, or created
+            appointment.start_time=datetime.strptime(data['start_time'],"%Y-%m-%d %H:%M").astimezone(pytz.UTC)
+            appointment.reason_for_visit=data['reason_for_visit']
+            appointment.is_cancelled=data['is_cancelled']
 
-                    #check reminders
+            #check reminders- if they are after the new appointment, delete them
+            new_apt_time=datetime.strptime(data['start_time'],"%Y-%m-%d %H:%M").astimezone(pytz.UTC)
 
-
-                    apt.save()
-                    break
+            reminders=json.loads(appointment.reminders)
+            updated_reminders=[]
+            for rem in reminders:
+                d=datetime.strptime(rem[0][:16],"%Y-%m-%d %H:%M")
+                if d>new_apt_time and not data['is_cancelled']:
+                    updated_reminders.append(rem)
+            
+            appointment.reminders=json.dumps(updated_reminders,default=str)
+            appointment.save()
             return jsonify({'result':'success'})
         except DoesNotExist:
             return jsonify({'result':'error'})
@@ -346,12 +358,12 @@ def create_reminder():
         apt=Appointment.get(Appointment.ap_id==apid)    #for testing
 
         #reminder from frontend will be string in format
-        date=datetime.strptime(reminder,"%Y-%m-%d %H:%M")
+        date=datetime.strptime(reminder,"%Y-%m-%d %H:%M").astimezone(pytz.UTC)
 
         reminders=json.loads(apt.reminders)
         reminders.append((date,False))
         reminders=json.dumps(reminders,default=str)
-        
+
         #update appointment reminders
         apt.reminders=reminders
         apt.save()
