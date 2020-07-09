@@ -38,11 +38,8 @@ class Appointment(BaseModel):
     created= DateTimeField(default=datetime.utcnow)
     start_time=DateTimeField(unique=True)
     reason_for_visit=TextField(null=True)
-    is_cancelled=BooleanField(default=False)
     reminders=TextField(null=True)
-    #reminders would be a json serialized list of tuples -->   [(datetime, sent)]
-    # where the first index is a datetime object 
-    # and the second index is a boolean, whether the reminder has been sent
+    
 
 #helper function to create the tables in interpreter. one time thing
 def create_tables():
@@ -94,7 +91,6 @@ data={
             'created':'2020-06-20',
             'start_time':'01:00:00',
             'reason':'checkup',
-            'cancelled':'False'
         }
     ]
 }
@@ -107,5 +103,4 @@ def add_junk_data():
         o=data['apts'][0]['o'],
         created=data['apts'][0]['created'],
         start_time=data['apts'][0]['start_time'],
-        reason_for_visit=data['apts'][0]['reason'],
-        is_cancelled=data['apts'][0]['cancelled'])
+        reason_for_visit=data['apts'][0]['reason'])
