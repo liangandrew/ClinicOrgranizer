@@ -200,15 +200,15 @@ def make_appointment():
             if time_diff > two_days:
                 default_reminder=apt_date_utc-two_days
                 #add default reminder into a list of tuples, serialize it into json and insert into dict and table
-                reminders=json.dumps([(default_reminder,False)],default=str)
+                reminders=json.dumps([default_reminder],default=str)
                 apt['reminders']=reminders
             elif time_diff == two_days:
                 default_reminder=apt_date_utc-one_day
-                reminders=json.dumps([(default_reminder,False)],default=str)
+                reminders=json.dumps([default_reminder],default=str)
                 apt['reminders']=reminders
             elif time_diff < two_days:
                 default_reminder=apt_date_utc-two_hours
-                reminders=json.dumps([(default_reminder,False)],default=str)
+                reminders=json.dumps([default_reminder],default=str)
                 apt['reminders']=reminders
             #else no default made reminder
 
@@ -225,8 +225,8 @@ def make_appointment():
 
 
 #Read resource
-@bp.route('/appointments/get_upcoming')
-def get_upcoming_appointments():
+@bp.route('/appointments/get_all')
+def get_all_appointments():
     #protected route, make sure user is logged in
 
     # if session.get('logged_in'):
@@ -248,8 +248,7 @@ def get_upcoming_appointments():
             appointments=[]
             ex=[Appointment.o.password,Appointment.p.password]
             for apt in user.appointments:
-                if apt.is_cancelled==False and datetime.now().astimezone(pytz.UTC) > apt.start_time:
-                    appointments.append(model_to_dict(apt,exclude=ex))
+                appointments.append(model_to_dict(apt,exclude=ex))
 
             return jsonify(appointments)
         except DoesNotExist:
@@ -298,8 +297,7 @@ def delete_appointment(id):
             appointment=Appointment.get_by_id(id)
             if appointment.o_id is not org.org_id:
                 return jsonify({'result':'error, apopintment not found'})
-            appointment.is_cancelled=True
-            appointment.save()
+            appointment.delete_instance()
 
             return jsonify({'result':'success'})
         except DoesNotExist:
@@ -332,7 +330,7 @@ def edit_appointment(id):
             reminders=json.loads(appointment.reminders)
             updated_reminders=[]
             for rem in reminders:
-                d=datetime.strptime(rem[0],'%Y-%m-%d %H:%M:%S%z')
+                d=datetime.strptime(rem,'%Y-%m-%d %H:%M:%S%z')
 
                 if d<new_apt_time and not data['is_cancelled']:
                     updated_reminders.append(rem)
@@ -362,7 +360,7 @@ def create_reminder():
         date=datetime.strptime(reminder,"%Y-%m-%d %H:%M").astimezone(pytz.UTC)
 
         reminders=json.loads(apt.reminders)
-        reminders.append((date,False))
+        reminders.append(date)
         reminders=json.dumps(reminders,default=str)
 
         #update appointment reminders
@@ -371,8 +369,3 @@ def create_reminder():
         return jsonify({'result':'success'})
     except DoesNotExist:
         return jsonify({'result':'error'})
-    
-
-@bp.route('/show_patient_info')
-def get_patient():
-    pass
