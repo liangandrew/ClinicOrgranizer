@@ -36,9 +36,13 @@ class Appointment(BaseModel):
     p=ForeignKeyField(Patient,backref='appointments',on_update='CASCADE',on_delete='CASCADE')
     o=ForeignKeyField(Org,backref='appointments',on_delete='CASCADE')
     created= DateTimeField(default=datetime.utcnow)
-    start_time=DateTimeField(unique=True)
+    start_time=DateTimeField()
     reason_for_visit=TextField(null=True)
     reminders=TextField(null=True)
+
+    class Meta():
+        indexes = (
+        (('o', 'start_time'), True), (('p', 'start_time'), True), )
     
 
 #helper function to create the tables in interpreter. one time thing
