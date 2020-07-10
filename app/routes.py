@@ -217,12 +217,6 @@ def make_appointment():
             return jsonify({'result':'error'})
         return jsonify({'result':'success'})
 
-######## in case i forget: get string for strptime by json.loads the reminder field, and loop through the list  ####
-#for rem in list2:
-#   print(datetime.strptime(rem[0][:16],"%Y-%m-%d %H:%M"))
-
-#editing appointments will also have to check reminders
-
 
 #Read resource
 @bp.route('/appointments/get_all')
