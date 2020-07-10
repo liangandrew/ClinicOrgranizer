@@ -38,7 +38,7 @@ class Appointment(BaseModel):
     created= DateTimeField(default=datetime.utcnow)
     start_time=DateTimeField()
     reason_for_visit=TextField(null=True)
-    reminders=TextField(null=True)
+    reminders=TextField()
 
     class Meta():
         indexes = (
@@ -95,6 +95,7 @@ data={
             'created':'2020-06-20',
             'start_time':'01:00:00',
             'reason':'checkup',
+            'reminders':[]
         }
     ]
 }
