@@ -11,3 +11,7 @@ venv
 *.db
 *.db-shm
 *.db-wal
+
+#gmail
+client_secret.json
+*.pickle
