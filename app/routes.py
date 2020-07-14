@@ -204,15 +204,12 @@ def make_appointment():
                 #add default reminder into a list of tuples, serialize it into json and insert into dict and table
                 reminders=json.dumps([default_reminder],default=str)
                 apt['reminders']=reminders
-            elif time_diff == two_days:
-                default_reminder=apt_date_utc-one_day
-                reminders=json.dumps([default_reminder],default=str)
-                apt['reminders']=reminders
+            elif time_diff <two_hours:
+                pass
             elif time_diff < two_days:
                 default_reminder=apt_date_utc-two_hours
                 reminders=json.dumps([default_reminder],default=str)
                 apt['reminders']=reminders
-            #else no default made reminder
 
             Appointment.create(**apt)            
         except DoesNotExist:
