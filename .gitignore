@@ -15,3 +15,6 @@ venv
 #gmail
 client_secret.json
 *.pickle
+
+#env
+*.env

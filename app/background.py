@@ -11,6 +11,16 @@ from email.mime.text import MIMEText
 
 import sys
 
+from twilio.rest import Client
+import os
+
+from dotenv import load_dotenv
+load_dotenv()
+
+twilio_sid=os.getenv("TWILIO_SID")
+twilio_auth=os.getenv("TWILIO_AUTH")
+client=Client(twilio_sid,twilio_auth)
+
 CLIENT_SECRET_FILE='client_secret.json'
 API_NAME='gmail'
 API_VERSION='v1'
@@ -36,6 +46,14 @@ def send_message(service, message):
   except:
       e = sys.exc_info()[0]
       print(e)
+
+
+def create_text(client,to,message):
+  text_message=client.messages.create(
+    body=message,
+    from_=+12025190347,
+    to=to
+  )
 
 
 def check_reminders():
