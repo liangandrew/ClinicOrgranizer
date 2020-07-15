@@ -20,6 +20,7 @@ load_dotenv()
 twilio_sid=os.getenv("TWILIO_SID")
 twilio_auth=os.getenv("TWILIO_AUTH")
 client=Client(twilio_sid,twilio_auth)
+twilio_number=os.getenv("TWILIO_NUMBER")
 
 CLIENT_SECRET_FILE='client_secret.json'
 API_NAME='gmail'
@@ -51,7 +52,7 @@ def send_message(service, message):
 def create_text(client,to,message):
   text_message=client.messages.create(
     body=message,
-    from_=+12025190347,
+    from_=twilio_number,
     to=to
   )
 
@@ -83,9 +84,11 @@ def check_reminders():
                 send_message(service,email)
 
                 #send text?
+                phone_number=ap.p.phone_number
+                text_msg='You have a scheduled appointment with ' +ap.o.name + ' on '+date_string +'. To contact ' + ap.o.name +', call '+ap.o.phone_number + ' or email '+ap.o.email+'.'
+                create_text(client,phone_number,text_msg)
 
         ap.reminders=json.dumps(updated_reminders,default=str)
         ap.save()
-    print('The time now is: %s'%now_utc)
 
 
