@@ -201,7 +201,7 @@ def make_appointment():
             apt['reminders']=reminders
             if time_diff > two_days:
                 default_reminder=apt_date_utc-two_days
-                #add default reminder into a list of tuples, serialize it into json and insert into dict and table
+                #add default reminder into a list, serialize it into json and insert
                 reminders=json.dumps([default_reminder],default=str)
                 apt['reminders']=reminders
             elif time_diff <two_hours:
@@ -351,7 +351,8 @@ def create_reminder():
 
         #reminder from frontend will be string in format
         date=datetime.strptime(reminder,"%Y-%m-%d %H:%M").astimezone(pytz.UTC)
-
+        #compare reminder date with curent date and appointment date. Should be in between
+        
         reminders=json.loads(apt.reminders)
         reminders.append(date)
         reminders=json.dumps(reminders,default=str)

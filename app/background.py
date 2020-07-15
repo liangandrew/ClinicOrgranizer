@@ -42,7 +42,6 @@ def create_message(to, subject, message_text):
 def send_message(service, message):
   try:
     message = (service.users().messages().send(userId='me', body=message).execute())
-    print('Message Id: %s' % message['id'])
     return message
   except:
       e = sys.exc_info()[0]
