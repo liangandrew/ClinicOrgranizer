@@ -8,9 +8,6 @@ import Welcome from "./components/Welcome";
 import Navbar from "./components/Navbar";
 
 class App extends Component {
-  constructor() {
-    super();
-  }
 
   render() {
     return (

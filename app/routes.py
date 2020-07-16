@@ -152,6 +152,12 @@ def get_current_user():
     else:
         return jsonify({'result':'error'})
 
+@bp.route('/login/status')
+def is_logged_in():
+    if session.get('logged_in'):
+        return jsonify({'logged_in':True})
+    return jsonify({'logged_in':False})
+
 
 #allows org to make an appointment
 @bp.route('/make_appointment',methods=['POST'])
