@@ -22,6 +22,24 @@ class Login extends Component{
         //send HTTP request to login api endpoint
         console.log('login clicked')
         e.preventDefault()
+
+        if(this.state.email===''||this.state.password===''){
+            console.log("missing fields")
+            return
+        }
+
+        const user={
+            email:this.state.email,
+            password:this.state.password,
+            is_org:this.state.is_org
+        };
+        console.log(user)
+        login(user).then(res=>{
+            console.log(res)
+            if(!res.error){
+                this.props.history.push('/profile')
+            }
+        })
         
     }
 

@@ -32,6 +32,29 @@ export const register =(user)=>{
     }
 }
 
-export const login=()=>{
-
+export const login=(user)=>{
+    if(user["is_org"]){
+        return axios.post('api/org/login',
+        {
+            email:user["email"],
+            password:user["password"]
+        }).then(res=>{
+            console.log(res)
+            return res.data
+        }).catch(err=>{
+            console.log(err)
+        })
+    }
+    else{
+        return axios.post('api/patient/login',
+        {
+            email:user["email"],
+            password:user["password"]
+        }).then(res=>{
+            console.log(res)
+            return res.data
+        }).catch(err=>{
+            console.log(err)
+        })
+    }
 }
