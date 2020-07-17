@@ -10,7 +10,7 @@ class Welcome extends Component{
                     <div className="col-sm-8 mx-auto">
                         <h1> Welcome to ClinicO </h1>
                         <br/>
-                        <p class="lead">ClinicO is a platform that provides an easy way for
+                        <p className="lead">ClinicO is a platform that provides an easy way for
                         businesses such as dentistries to store people's 
                         phone numbers and upcoming appointments and automate sending notifications and reminders
                         </p>
@@ -21,11 +21,11 @@ class Welcome extends Component{
                         <div className="row">
                             <div className="col-md-6">
                                 <p class="lead">
-                                    <Link to="/login">Login In</Link>
+                                    <Link to="/login">Login</Link>
                                 </p>
                             </div>
                             <div className="col-md-6">
-                                <p class="lead">
+                                <p className="lead">
                                     <Link to="/register">Register</Link>
                                 </p>
                             </div>
