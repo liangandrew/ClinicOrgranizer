@@ -20,7 +20,7 @@ class Welcome extends Component{
                         <br/>
                         <div className="row">
                             <div className="col-md-6">
-                                <p class="lead">
+                                <p className="lead">
                                     <Link to="/login">Login</Link>
                                 </p>
                             </div>
