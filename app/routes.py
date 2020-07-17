@@ -24,7 +24,7 @@ def authenticate(user,is_org):
 @bp.route('/logout')
 def logout():
     session.pop('logged_in', None)
-    return jsonify({'result':'success'})
+    return jsonify({'success':True})
 
 
 #register patient
@@ -43,8 +43,7 @@ def register_patient():
         used_phone=Org.get_or_none(Org.phone_number==phone_number)
         if used_email or used_phone:
             #the email and/or phone number registered as an org, can't reregister as patient
-            flash('Email and/or phone number already registered')
-            return jsonify({'error':'Email and/or phone number already registered'})  
+            return jsonify({"success":False,"message":"Phone or email already registered"}) 
         
     try:
         #store new patient into database
@@ -57,11 +56,10 @@ def register_patient():
                 password=password
             )
 
-        return jsonify({'success':'account registered successfully'})    #redired to /login page
+        return jsonify({"success":True,"message":"Registered successfully"})
 
     except IntegrityError:
-        flash('Email and/or phone number already registered')
-        return jsonify({'error':'Email and/or phone number already registered'})
+        return jsonify({"success":False,"message":"Phone or email already registered"})
 
 
 #patient login
@@ -81,10 +79,12 @@ def patient_login():
             # authenticate
             authenticate(patient,False)
 
-            return jsonify({'result':'success'})   
+            return jsonify({"success":True,"message":"Logged in successfully"}) 
+
+        return jsonify({"success":False,"message":"Email and password do not match"})
             
     except Patient.DoesNotExist:
-        return jsonify({'result':'error'})  #redirect to login again
+        return jsonify({"success":False,"message":"Email is not registered"})
 
 
 #register orgs
@@ -103,7 +103,7 @@ def register_org():
 
         if used_phone or used_email:
             #phone and/or email already registered as patient
-            return jsonify({"error":'phone number and/or email already registered'})
+            return jsonify({"success":False,"message":"Phone or email already registered"})
     try:
         #store new patient into database
         with db.atomic():
@@ -114,10 +114,10 @@ def register_org():
                 password=password
             )
 
-        return 'success'    #redired to /login page
+        return jsonify({"success":True,"message":"Registered successfully"})
 
     except IntegrityError:
-        return jsonify({"error":'phone number and/or email already registered'})  #redirect to register again
+        return jsonify({"success":False,"message":"Phone or email already registered"})
 
 
 #login for orgs
@@ -137,10 +137,10 @@ def org_login():
             # authenticate
             authenticate(org,True)
 
-            return jsonify({'result':'success'})    #redirect to /homescreen
-            
+            return jsonify({"success":True,"message":"Logged in successfully"}) 
+        return jsonify({"success":False,"message":"Email and password do not match"})
     except Org.DoesNotExist:
-        return jsonify({'result':'error'})  #redirect to login again
+        return jsonify({"success":False,"message":"Email is not registered"})
 
 
 def get_current_user():
