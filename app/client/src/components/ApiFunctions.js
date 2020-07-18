@@ -25,7 +25,8 @@ export const register =(user)=>{
             email:user["email"],
             password:user["password"]
         }).then(res=>{
-            console.log("registered successfully")
+            console.log(res.data)
+            return res.data
         }).catch(err=>{
             console.log(err)
         })
@@ -39,7 +40,7 @@ export const login=(user)=>{
             email:user["email"],
             password:user["password"]
         }).then(res=>{
-            console.log(res)
+            console.log(res.data)
             return res.data
         }).catch(err=>{
             console.log(err)
@@ -51,7 +52,7 @@ export const login=(user)=>{
             email:user["email"],
             password:user["password"]
         }).then(res=>{
-            console.log(res)
+            console.log(res.data)
             return res.data
         }).catch(err=>{
             console.log(err)

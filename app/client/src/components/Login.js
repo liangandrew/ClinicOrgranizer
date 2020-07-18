@@ -36,7 +36,7 @@ class Login extends Component{
         console.log(user)
         login(user).then(res=>{
             console.log(res)
-            if(!res.error){
+            if(res.success){
                 this.props.history.push('/profile')
             }
         })
