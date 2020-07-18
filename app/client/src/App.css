@@ -46,3 +46,13 @@
     transform: rotate(360deg);
   }
 }
+
+.btn-link {
+  outline: none !important;
+  padding: 5px;
+  border: 5px;
+  vertical-align: baseline;
+  color:#FFFFFF;
+  text-decoration: none !important;
+
+}

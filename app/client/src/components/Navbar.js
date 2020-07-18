@@ -32,6 +32,10 @@ class Welcome extends Component {
         this.checkAuth()
     }
 
+    logout=(e)=>{
+        console.log("logout clicked")
+    }
+
     render() {
         const loggedOutLink=(
             <ul className="navbar-nav">
@@ -44,7 +48,11 @@ class Welcome extends Component {
         const loggedInLinks=(
             <ul className="navbar-nav">
                 <li className="nav-item">
-                    <Link to="/" className="nav-link">Profile</Link>
+                    <Link to="/profile" className="nav-link">Profile</Link>
+                </li>
+
+                <li className="navbar-nav">
+                    <button type="button" className="btn btn-link" onClick={this.logout}>Log out</button>
                 </li>
             </ul>
         )
