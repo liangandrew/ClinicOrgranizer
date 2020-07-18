@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import logo from "./logo.svg";
 import "./App.css";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import Welcome from "./components/Welcome";
 import Navbar from "./components/Navbar";
+import Profile from "./components/Profile";
 
 class App extends Component {
 
@@ -15,10 +15,12 @@ class App extends Component {
         <div className="App">
           <Navbar />
           <Route exact path="/" component={Welcome} />
-          <div className="containter">
+          <Switch>
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
-          </div>
+            <Route exact path="/profile" component={Profile}/>
+            <Route path="/:any" component={Welcome}/>
+          </Switch>
         </div>
       </Router>
     );
