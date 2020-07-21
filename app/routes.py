@@ -23,7 +23,9 @@ def authenticate(user,is_org):
 #removes user from session
 @bp.route('/logout')
 def logout():
-    session.pop('logged_in', None)
+    key=session.pop('logged_in', None)
+    if key is None:
+        return jsonify({"success":False})
     return jsonify({'success':True})
 
 
