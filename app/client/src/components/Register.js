@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 import { register } from "./ApiFunctions";
+import { Redirect } from "react-router-dom";
 
 class Register extends Component {
     constructor() {
@@ -63,6 +64,9 @@ class Register extends Component {
     };
 
     render() {
+        if(this.props.isAuthenticated){
+            return <Redirect to="/profile"/>;
+        }
         return (
             <div className="container">
                 <div className="row">

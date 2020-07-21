@@ -1,9 +1,12 @@
 import React, {Component} from 'react'
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
 
 class Welcome extends Component{
     render(){
+        if(this.props.isAuthenticated){
+            return <Redirect to="/profile"/>;
+        }
         return(
             <div className="container">
                 <div className="jumbotron mt-5">

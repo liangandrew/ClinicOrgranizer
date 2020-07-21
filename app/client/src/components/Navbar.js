@@ -1,39 +1,11 @@
 import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
-import axios from 'axios'
 
-class Welcome extends Component {
-    constructor(){
-        super();
-        this.state={
-            logged_in:false
-        }
-    }
+class Navbar extends Component {
 
-    checkAuth(){
-        axios.get('api/login/status',{withCredentials:true}).then(res=>{
-            console.log(res)
-            if(res.data.logged_in && !this.state.logged_in){
-                this.setState({
-                    logged_in:true
-                })
-            }
-            else if(!res.data.logged_in && this.state.logged_in){
-                this.setState({
-                    logged_in:false
-                })
-            }
-        }).catch(err=>{
-            console.log(err)
-        })
-    }
-
-    componentDidMount(){
-        this.checkAuth()
-    }
-
-    logout=(e)=>{
-        console.log("logout clicked")
+    logout=()=>{
+        console.log("logout")
+        this.props.logout()
     }
 
     render() {
@@ -56,12 +28,14 @@ class Welcome extends Component {
                 </li>
             </ul>
         )
+        console.log("navbar auth")
+        console.log(this.props.isAuthenticated)
         return (
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark rounded">
-                {this.state.logged_in ? loggedInLinks : loggedOutLink}
+                {this.props.isAuthenticated ? loggedInLinks : loggedOutLink}
             </nav>
         );
     }
 }
 
-export default withRouter(Welcome);
+export default Navbar;

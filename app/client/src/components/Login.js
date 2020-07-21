@@ -1,9 +1,11 @@
 import React, {Component} from 'react'
 import {login} from './ApiFunctions'
+import { Redirect } from "react-router-dom";
+
 
 class Login extends Component{
-    constructor(){
-        super()
+    constructor(props){
+        super(props)
         this.state={
             email:'',
             password:'',
@@ -14,8 +16,8 @@ class Login extends Component{
     handleChange=(e)=>{
         const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
         this.setState({[e.target.name]:value})
-        console.log(e.target.value)
-        console.log(this.state)
+        // console.log(e.target.value)
+        // console.log(this.state)
     }
 
     handleSubmit=(e)=>{
@@ -33,17 +35,21 @@ class Login extends Component{
             password:this.state.password,
             is_org:this.state.is_org
         };
-        console.log(user)
+        // console.log(user)
         login(user).then(res=>{
             console.log(res)
-            if(res.success){
-                this.props.history.push('/profile')
-            }
+            // if(res.success){
+            //     this.props.history.push('/profile')
+            // }
+            this.props.appLogin()
         })
         
     }
 
     render(){
+        if(this.props.isAuthenticated){
+            return <Redirect to="/profile"/>;
+        }
         return(
             <div className="container">
                 <div className="row">
