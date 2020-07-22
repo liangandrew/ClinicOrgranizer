@@ -239,21 +239,25 @@ def get_all_appointments():
         user_email=data['user_email']
 
         user=object()
+        appointments=[]
+        ex=[Appointment.o.password,Appointment.p.password]
+
         try:
             if is_org:
                 #check user email in org table
                 user=Org.get(Org.email==user_email)
+                # for apt in user.appointments:
+                for apt in Appointment.select().where(Appointment.o_id==user.id).order_by(Appointment.start_time):
+                    appointments.append(model_to_dict(apt,exclude=ex))
+                return jsonify(appointments)
             else:
                 user=Patient.get(Patient.email==user_email)
-
-            appointments=[]
-            ex=[Appointment.o.password,Appointment.p.password]
-            for apt in user.appointments:
-                appointments.append(model_to_dict(apt,exclude=ex))
-
-            return jsonify(appointments)
-        except DoesNotExist:
-            return jsonify({'result':'error'})
+                for apt in Appointment.select().where(Appointment.p_id==user.id).order_by(Appointment.start_time):
+                    appointments.append(model_to_dict(apt,exclude=ex))
+                return jsonify({'success':True,'data':appointments})
+            
+        except:
+            return jsonify({'success':False})
     # return jsonify({'result':'error'})
     
 
