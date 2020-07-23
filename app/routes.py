@@ -301,12 +301,12 @@ def delete_appointment(id):
             org=Org.get(Org.email==session['user_email'])
             appointment=Appointment.get_by_id(id)
             if appointment.o_id is not org.org_id:
-                return jsonify({'result':'error, apopintment not found'})
+                return jsonify({'success':False,'message':'error, apopintment not found'})
             appointment.delete_instance()
 
-            return jsonify({'result':'success'})
+            return jsonify({'success':True})
         except DoesNotExist:
-            return jsonify({'result':'error'})
+            return jsonify({'success':False})
 
 
 #orgs can edit appointment
@@ -327,7 +327,6 @@ def edit_appointment(id):
             #should only be able to edit certain fields,    i.e. can't change patient, or org, or created
             appointment.start_time=datetime.strptime(data['start_time'],"%Y-%m-%d %H:%M").astimezone(pytz.UTC)
             appointment.reason_for_visit=data['reason_for_visit']
-            appointment.is_cancelled=data['is_cancelled']
 
             #check reminders- if they are after the new appointment, delete them
             new_apt_time=datetime.strptime(data['start_time'],"%Y-%m-%d %H:%M").astimezone(pytz.UTC)
@@ -337,7 +336,7 @@ def edit_appointment(id):
             for rem in reminders:
                 d=datetime.strptime(rem,'%Y-%m-%d %H:%M:%S%z')
 
-                if d<new_apt_time and not data['is_cancelled']:
+                if d<new_apt_time:
                     updated_reminders.append(rem)
             
             appointment.reminders=json.dumps(updated_reminders,default=str)
