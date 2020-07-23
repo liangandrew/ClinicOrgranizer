@@ -247,12 +247,12 @@ def get_all_appointments():
                 #check user email in org table
                 user=Org.get(Org.email==user_email)
                 # for apt in user.appointments:
-                for apt in Appointment.select().where(Appointment.o_id==user.id).order_by(Appointment.start_time):
+                for apt in Appointment.select().where(Appointment.o_id==user.org_id).order_by(Appointment.start_time):
                     appointments.append(model_to_dict(apt,exclude=ex))
                 return jsonify(appointments)
             else:
                 user=Patient.get(Patient.email==user_email)
-                for apt in Appointment.select().where(Appointment.p_id==user.id).order_by(Appointment.start_time):
+                for apt in Appointment.select().where(Appointment.p_id==user.patient_id).order_by(Appointment.start_time):
                     appointments.append(model_to_dict(apt,exclude=ex))
                 return jsonify({'success':True,'data':appointments})
             
