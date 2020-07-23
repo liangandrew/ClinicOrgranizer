@@ -66,7 +66,7 @@ class App extends Component {
           <Navbar isAuthenticated={this.state.logged_in} logout={this.navbarLogout}/>
           <Route exact path="/" render={(props) => <Welcome {...props} isAuthenticated={this.state.logged_in}/>} />
           <Switch>
-            <Route exact path="/register" render={(props) => <Login {...props} isAuthenticated={this.state.logged_in}/>} />
+            <Route exact path="/register" render={(props) => <Register {...props} isAuthenticated={this.state.logged_in}/>} />
             <Route exact path="/login" render={(props) => <Login {...props} isAuthenticated={this.state.logged_in} appLogin={this.handleLogin}/>}  />
             <Route exact path="/profile" render={(props) => <Profile {...props} isAuthenticated={this.state.logged_in}/>} />
             <Route path="/:any" component={Welcome}/>
