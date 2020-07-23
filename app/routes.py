@@ -230,13 +230,13 @@ def make_appointment():
 def get_all_appointments():
     #protected route, make sure user is logged in
 
-    # if session.get('logged_in'):
-        #is_org=session['is_org']
-        #user_email=session['user_email']
+    if session.get('logged_in'):
+        is_org=session['is_org']
+        user_email=session['user_email']
 
-        data=request.get_json()
-        is_org=data['is_org']
-        user_email=data['user_email']
+        # data=request.get_json()
+        # is_org=data['is_org']
+        # user_email=data['user_email']
 
         user=object()
         appointments=[]
@@ -254,7 +254,7 @@ def get_all_appointments():
                 user=Patient.get(Patient.email==user_email)
                 for apt in Appointment.select().where(Appointment.p_id==user.patient_id).order_by(Appointment.start_time):
                     appointments.append(model_to_dict(apt,exclude=ex))
-                return jsonify({'success':True,'data':appointments})
+                return jsonify({'success':True,'appointments':appointments})
             
         except:
             return jsonify({'success':False})
