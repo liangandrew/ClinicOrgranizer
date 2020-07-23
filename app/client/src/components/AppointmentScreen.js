@@ -12,5 +12,17 @@ class AppointmentScreen extends Component{
         reason:''
     }
 
+    render(){
+        if(!this.props.isAuthenticated){
+            return <Redirect to="/"/>;
+        }
+        return(
+            <div className="container">
+                Appointment details
+            </div>
+        )
+    }
 
 }
+
+export default AppointmentScreen

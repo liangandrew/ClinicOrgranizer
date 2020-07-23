@@ -70,7 +70,7 @@ class App extends Component {
             <Route exact path="/register" render={(props) => <Register {...props} isAuthenticated={this.state.logged_in}/>} />
             <Route exact path="/login" render={(props) => <Login {...props} isAuthenticated={this.state.logged_in} appLogin={this.handleLogin}/>}  />
             <Route exact path="/profile" render={(props) => <Profile {...props} isAuthenticated={this.state.logged_in}/>} />
-            <Route path="/appointments/:id" component={AppointmentScreen}/>
+            <Route path="/appointments/:id" render={(props) => <AppointmentScreen {...props} isAuthenticated={this.state.logged_in}/>} />
             <Route path="/:any" component={Welcome}/>
           </Switch>
         </div>

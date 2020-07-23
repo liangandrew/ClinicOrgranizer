@@ -25,7 +25,6 @@ export const register =(user)=>{
             email:user["email"],
             password:user["password"]
         }).then(res=>{
-            console.log(res.data)
             return res.data
         }).catch(err=>{
             console.log(err)
@@ -40,7 +39,6 @@ export const login=(user)=>{
             email:user["email"],
             password:user["password"]
         }).then(res=>{
-            console.log(res.data)
             return res.data
         }).catch(err=>{
             console.log(err)
@@ -52,10 +50,18 @@ export const login=(user)=>{
             email:user["email"],
             password:user["password"]
         }).then(res=>{
-            console.log(res.data)
             return res.data
         }).catch(err=>{
             console.log(err)
         })
     }
+}
+
+
+export const getAppointments=()=>{
+    return axios.get('api/appointments/get_all',{withCredentials:true}).then(res=>{
+        return res.data
+    }).catch(err=>{
+        console.log(err)
+    })
 }
