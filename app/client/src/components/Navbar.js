@@ -28,8 +28,8 @@ class Navbar extends Component {
                 </li>
             </ul>
         )
-        console.log("navbar auth")
-        console.log(this.props.isAuthenticated)
+        // console.log("navbar auth")
+        // console.log(this.props.isAuthenticated)
         return (
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark rounded">
                 {this.props.isAuthenticated ? loggedInLinks : loggedOutLink}
