@@ -265,13 +265,13 @@ def get_all_appointments():
 @bp.route('/appointments/get/<int:id>')
 def get_single_appointment(id):
     #make sure user is logged in and has the appointment it requests for    i.e. a patient can't see apt of others
-    # if session.get('logged_in'):
-        #is_org=session['is_org']
-        #user_email=session['user_email']
+    if session.get('logged_in'):
+        is_org=session['is_org']
+        user_email=session['user_email']
     
-        data=request.get_json()
-        is_org=data['is_org']
-        user_email=data['user_email']
+        # data=request.get_json()
+        # is_org=data['is_org']
+        # user_email=data['user_email']
         user=object()
         appointment=object()
         try:
@@ -288,7 +288,7 @@ def get_single_appointment(id):
             return jsonify({'success':True,'appointment':model_to_dict(appointment,exclude=ex)})
         except DoesNotExist:
             return jsonify({'success':False})
-    #return jsonify({'result':'error'})
+    return jsonify({'success':False})
 
 
 #orgs delete appointment
