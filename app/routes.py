@@ -249,7 +249,7 @@ def get_all_appointments():
                 # for apt in user.appointments:
                 for apt in Appointment.select().where(Appointment.o_id==user.org_id).order_by(Appointment.start_time):
                     appointments.append(model_to_dict(apt,exclude=ex))
-                return jsonify(appointments)
+                return jsonify({'success':True,'appointments':appointments})
             else:
                 user=Patient.get(Patient.email==user_email)
                 for apt in Appointment.select().where(Appointment.p_id==user.patient_id).order_by(Appointment.start_time):
@@ -285,9 +285,9 @@ def get_single_appointment(id):
 
             #list fields not to include in response     ex. passwords
             ex=[Appointment.o.password,Appointment.p.password]
-            return jsonify(model_to_dict(appointment,exclude=ex))
+            return jsonify({'success':True,'appointment':model_to_dict(appointment,exclude=ex)})
         except DoesNotExist:
-            return jsonify({'result':'error'})
+            return jsonify({'success':False})
     #return jsonify({'result':'error'})
 
 
