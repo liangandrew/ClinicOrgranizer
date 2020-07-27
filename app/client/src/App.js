@@ -7,7 +7,8 @@ import Welcome from "./components/Welcome";
 import Navbar from "./components/Navbar";
 import Profile from "./components/Profile";
 import AppointmentScreen from "./components/AppointmentScreen";
-import {getAppointments} from "./components/ApiFunctions";
+import NewAppointment from "./components/NewAppointment";
+import {getAppointments, deleteAppointment, createAppointment } from "./components/ApiFunctions";
 
 import axios from 'axios';
 
@@ -17,22 +18,31 @@ class App extends Component {
     super()
     this.state={
       logged_in:false,
+      user_email:'',
+      is_org:false,
       fetched_data:false,
+      deleted_data:false,
+      new_data:false,
+      edited_data:false,
       appointments:[]
     }
   }
 
   checkAuth(){
-    axios.get('api/login/status',{withCredentials:true}).then(res=>{
+    axios.get('/api/login/status',{withCredentials:true}).then(res=>{
         console.log(res)
         if(res.data.logged_in && !this.state.logged_in){
             this.setState({
-                logged_in:true
+                logged_in:true,
+                user_email:res.data.user_email,
+                is_org:res.data.is_org
             })
         }
         else if(!res.data.logged_in && this.state.logged_in){
             this.setState({
-                logged_in:false
+                logged_in:false,
+                user_email:'',
+                is_org:false
             })
         }
     }).catch(err=>{
@@ -42,20 +52,14 @@ class App extends Component {
 
   componentDidMount(){
     this.checkAuth()
-    // if(this.state.logged_in){
-    //   getAppointments().then(data=>{
-    //     this.setState({appointments:data.appointments})
-    //     console.log(data.appointments)
-    //   })
-    // }
   }
 
   componentDidUpdate(){
-    if(this.state.logged_in && !this.state.fetched_data){
+    if(this.state.logged_in && (!this.state.fetched_data || this.state.deleted_data || this.state.new_data || this.state.edited_data)){
       
       getAppointments().then(data=>{
         if(data.success){
-          this.setState({appointments:data.appointments, fetched_data:true})
+          this.setState({appointments:data.appointments, fetched_data:true, new_data:false,deleted_data:false,edited_data:false})
           console.log(data)
         }
         
@@ -68,11 +72,13 @@ class App extends Component {
       console.log(res)
       if(res.data.success){
         this.setState({
-          logged_in:false
-        })
+          logged_in:false,
+          user_email:'',
+          is_org:false
+      })
       }
       console.log("state after logging out")
-      console.log(this.state.logged_in)
+      console.log(this.state)
       }).catch(err=>{
         console.log(err)
     })
@@ -80,6 +86,24 @@ class App extends Component {
 
   handleLogin=()=>{
     this.setState({logged_in:true})
+  }
+
+  handleDelete=(id)=>{
+    deleteAppointment(id).then(res=>{
+      console.log(res)
+      console.log(this.state)
+    })
+  }
+
+  handleNewAppointment=(apt)=>{
+    //make axios request to add appointment
+    //change state edited_data to rerender
+    createAppointment(apt).then(res=>{
+      console.log(res)
+      this.setState({new_data:true})
+    }).catch(err=>{
+      console.log(err)
+    })
   }
 
   render() {
@@ -92,6 +116,7 @@ class App extends Component {
             <Route exact path="/register" render={(props) => <Register {...props} isAuthenticated={this.state.logged_in}/>} />
             <Route exact path="/login" render={(props) => <Login {...props} isAuthenticated={this.state.logged_in} appLogin={this.handleLogin}/>}  />
             <Route exact path="/profile" render={(props) => <Profile {...props} isAuthenticated={this.state.logged_in} appointments={this.state.appointments}/>} />
+            <Route exact path="/make_appointment" render={(props) => <NewAppointment {...props} isAuthenticated={this.state.logged_in} is_org={this.state.is_org} user_email={this.state.user_email} createNewAppointment={this.handleNewAppointment} new_data={this.state.new_data}/>}/>
             <Route path="/appointments/:id" render={(props) => <AppointmentScreen {...props} isAuthenticated={this.state.logged_in}/>} />
             <Route path="/:any" component={Welcome}/>
           </Switch>

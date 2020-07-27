@@ -157,7 +157,7 @@ def get_current_user():
 @bp.route('/login/status')
 def is_logged_in():
     if session.get('logged_in'):
-        return jsonify({'logged_in':True})
+        return jsonify({'logged_in':True,'user_email':session.get('user_email'),'is_org':session.get('is_org')})
     return jsonify({'logged_in':False})
 
 
@@ -166,27 +166,27 @@ def is_logged_in():
 def make_appointment():
     #make sure user is logged in and is an org to be able to make an appointment
 
-    # if not (session.get('logged_in') and session.get('is_org')):
-    #     return jsonify({'result':'error'})
-    # else:
+    if not (session.get('logged_in') and session.get('is_org')):
+        return jsonify({'result':'error'})
+    else:
         try:
-            # org=get_current_user()
+            org=get_current_user()
             data=request.get_json()
             apt={}
 
-            # org_email=session['user_email']
-            org_email=data['org_email']
-            org_id=Org.get(Org.email==org_email).org_id
-            apt['o_id']=org_id
-            # org_id=org.org_id
+            org_email=session['user_email']
+            # org_email=data['org_email']
+            # org_id=Org.get(Org.email==org_email).org_id
             # apt['o_id']=org_id
+            org_id=org.org_id
+            apt['o_id']=org_id
 
             patient_email=data['patient_email']
             patient_id=Patient.get(Patient.email==patient_email).patient_id
             apt['p_id']=patient_id
 
             date=data['appointment_time']
-            #date is in string format YYYY-mm-dd HH:MM:SS   format --> %Y-%m-%d %H:%M
+            #date is in string format YYYY-mm-dd HH:MM   format --> %Y-%m-%d %H:%M
             #convert the string into a datetime object
             apt_date=datetime.strptime(date,'%Y-%m-%d %H:%M')
             #convert to UTC
@@ -220,9 +220,9 @@ def make_appointment():
                 apt['reminders']=reminders
 
             Appointment.create(**apt)            
-        except DoesNotExist:
-            return jsonify({'result':'error'})
-        return jsonify({'result':'success'})
+        except:
+            return jsonify({'success':False})
+        return jsonify({'success':True})
 
 
 #Read resource
