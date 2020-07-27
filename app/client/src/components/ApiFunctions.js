@@ -86,6 +86,8 @@ export const deleteAppointment=(id)=>{
 export const createAppointment=(apt)=>{
     return axios.post('/api/make_appointment',
     {
-
-    })
+        patient_email:apt.patient_email,
+        appointment_time:apt.appointment_time,
+        reason:apt.reason
+    },{withCredentials:true})
 }
