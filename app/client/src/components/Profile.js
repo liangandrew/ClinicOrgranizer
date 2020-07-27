@@ -36,13 +36,14 @@ class Profile extends Component{
                 <div className="card">
                     <div className="card-header">
                         <div className="row">
-                            <span className="card-title col s3">ID #</span>
-                            <span className="card-title col s3">Date Created</span>
-                            <span className="card-title col s3">Organization</span>
-                            <span className="card-title col s3">Start Time</span>
+                            <span className="card-title col ">ID #</span>
+                            <span className="card-title col ">Date Created</span>
+                            <span className="card-title col ">Organization</span>
+                            <span className="card-title col">Patient</span>
+                            <span className="card-title col ">Start Time</span>
                         </div>
                     </div>
-                    <div className="card-body">
+                    <ul className="list-group list-group-flush">
                         {this.props.appointments && this.props.appointments.map(apt=>{
                             let created_date=new Date(apt.created)
                             // console.log(created_date.toString())
@@ -50,17 +51,24 @@ class Profile extends Component{
                             // console.log(start_time.toLocaleString())
                             return(
                             <Link key={apt.ap_id} to={'/appointments/' + apt.ap_id} style={{ textDecoration: 'none' }}>
-                                <div className="row">
-                                    <span className="card-title col s3">{apt.ap_id}</span>
-                                    <span className="card-title col s3">{created_date.toLocaleString()}</span>
-                                    <span className="card-title col s3">{apt.o.name}</span>
-                                    <span className="card-title col s3">{start_time.toLocaleString()}</span>
-                                </div>
+                                <li className="list-group-item">
+                                    <div className="row">
+                                        <span className="card-title col ">{apt.ap_id}</span>
+                                        <span className="card-title col ">{created_date.toLocaleString()}</span>
+                                        <span className="card-title col ">{apt.o.name}</span>
+                                        <span className="card-title col">{apt.p.name}</span>
+                                        <span className="card-title col ">{start_time.toLocaleString()}</span>
+                                    </div>
+                                </li>
                             </Link>
                             )
                         })}
-                    </div>
+                    </ul>
                 </div>
+                <br/>
+                <Link to={'/make_appointment'} style={{ textDecoration: 'none' }}>
+                    New Appointment
+                </Link>
             </div>
         )
     }
