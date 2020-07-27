@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
-import {Redirect} from 'react-router-dom';
+import {Redirect, Link} from 'react-router-dom';
 import {getAppointment} from './ApiFunctions';
+import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import MomentUtils from '@date-io/moment';
+import moment from 'moment';
 
 class AppointmentScreen extends Component{
     _isMounted=false;
@@ -10,10 +13,10 @@ class AppointmentScreen extends Component{
         org_email:'',
         patient:'',
         patient_email:'',
-        date_created:'',
         start_time:'',
         reason:'',
-        reminders:[]
+        reminders:[],
+        new_reminder:''
     }
 
     componentDidMount(){
@@ -22,21 +25,24 @@ class AppointmentScreen extends Component{
         getAppointment(id).then(res=>{
             console.log(res)
             if(res.success && this._isMounted){
-                let created_date=new Date(res.appointment.created)
-                let start=new Date(res.appointment.start_time)
-                // console.log(start_time.toLocaleString())
+                let start=moment(res.appointment.start_time)
+                console.log(start)
+                let new_rem=moment()
+                console.log(new_rem)
                 this.setState({
                     id:id,
                     org:res.appointment.o.name,
                     org_email:res.appointment.o.email,
                     patient:res.appointment.p.name,
                     patient_email:res.appointment.p.email,
-                    date_created:created_date.toLocaleString(),
-                    start_time:start.toLocaleString(),
-                    reason:res.appointment.reason,
-                    reminders:res.appointment.reminders
+                    start_time:start,
+                    reason:res.appointment.reason_for_visit,
+                    reminders:JSON.parse(res.appointment.reminders),
+                    new_reminder:new_rem
                 })
             }
+        }).catch(err=>{
+            console.log(err)
         })
     }
 
@@ -48,9 +54,28 @@ class AppointmentScreen extends Component{
         const value =
             e.target.type === "checkbox" ? e.target.checked : e.target.value;
         this.setState({ [e.target.name]: value });
-        console.log(e.target.value);
-        // console.log(this.state);
-    };
+        // console.log(e.target.value);
+        console.log(this.state);
+    }
+
+    handleDateChange=(date)=>{
+        this.setState({
+            start_time:date._d
+        })
+        console.log(this.state.start_time)
+    }
+
+    handleReminderChange=(date)=>{
+        this.setState({
+            new_reminder:date._d
+        })
+        console.log(this.state.start_time)
+    }
+
+    handleDelete=(id)=>{
+        console.log('delete appointment')
+    }
+
 
     render(){
         if(!this.props.isAuthenticated){
@@ -58,50 +83,125 @@ class AppointmentScreen extends Component{
         }
         return(
             <div className="container">
-                <h2>Appointment details</h2>
-                <br/>
                 <div className="row">
-                    <div className="col">Organization: {this.state.org}</div>
-                    <div className="col">Patient: {this.state.patient}</div>
+                    <div className="col-md-6 mt-5 mx-auto">
+                        <form onSubmit={this.handleSave}>
+                            <h2>Appointment {this.state.id} Details</h2>
+                            <br/>
+                            <div className="row">
+                                <div className="col">
+                                    <div className="form-group">
+                                        <label htmlFor="org">Organization</label>
+                                        <input 
+                                            readOnly 
+                                            value={this.state.org}
+                                            className="form-control"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="col">
+                                    <div className="form-group">
+                                        <label htmlFor="org_email">Organization Email</label>
+                                        <input 
+                                            readOnly 
+                                            value={this.state.org_email}
+                                            className="form-control"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
+                            <div className="row">
+                                <div className="col">
+                                        <div className="form-group">
+                                            <label htmlFor="patient">Patient</label>
+                                            <input 
+                                                readOnly 
+                                                value={this.state.patient}
+                                                className="form-control"
+                                            />
+                                    </div>
+                                </div>
+                                <div className="col">
+                                        <div className="form-group">
+                                            <label htmlFor="patient_email">Patient Email</label>
+                                            <input 
+                                                readOnly 
+                                                value={this.state.patient_email}
+                                                className="form-control"
+                                            />
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
+                            <div className="form-group">
+                                <label htmlFor="start_time">Start Time</label>
+                                <MuiPickersUtilsProvider utils={MomentUtils}>
+                                    <DateTimePicker
+                                        name="start_time"
+                                        variant="inline"
+                                        ampm={true}
+                                        value={this.state.start_time}
+                                        onChange={this.handleDateChange}
+                                        onError={console.log}
+                                        disablePast={true}
+                                        format="YYYY-MM-DD hh:mm a"
+                                    />
+                                </MuiPickersUtilsProvider>
+                            </div>
+                            <br/>
+                            <div className="form-group">
+                                <label htmlFor="reason">Reason For Appointment</label>
+                                <input 
+                                    type="text"
+                                    className="form-control"
+                                    name="reason"
+                                    placeholder="optional"
+                                    value={this.state.reason}
+                                    onChange={this.handleChange}
+                                />
+                            </div>
+                            <br/>
+                            <div className="row">
+                                <div className="col">
+                                    <span className="card-title col ">Current Reminders Set</span>
+                                    <ul className="list-group list-group-flush">
+                                        {this.state.reminders.length && this.state.reminders.map(rem=>{
+                                            let reminder_time=moment(rem).format('YYYY-MM-DD HH:mm a')
+                                            // console.log(start_time.toLocaleString())
+                                            return(
+                                                <li className="list-group-item">
+                                                    <div className="row">
+                                                        <span className="card-title col ">{reminder_time}</span>
+                                                    </div>
+                                                </li>
+                                            )
+                                        })}
+                                    </ul>
+                                </div>
+                                <div className="col">
+                                    <div className="form-group">
+                                        <label htmlFor="start_time">Create New Reminder</label>
+                                        <MuiPickersUtilsProvider utils={MomentUtils}>
+                                            <DateTimePicker
+                                                name="reminder_time"
+                                                variant="inline"
+                                                ampm={true}
+                                                value={this.state.new_reminder}
+                                                onChange={this.handleReminderChange}
+                                                onError={console.log}
+                                                disablePast={true}
+                                                format="YYYY-MM-DD hh:mm a"
+                                            />
+                                        </MuiPickersUtilsProvider>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
                 </div>
-                <div className="row">
-                    <div className="col">Organization Email: {this.state.org_email}</div>
-                    <div className="col">Patient Email: {this.state.patient_email}</div>
-                </div>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <div className="form-group">
-                    <label>Start Time</label>
-                    <input 
-                        type="datetime-local" 
-                        id="start_time" 
-                        name="start_time" 
-                        value={this.state.start_time} 
-                        // pattern="/^(((0[13578]|1[02])[\/\.-](0[1-9]|[12]\d|3[01])[\/\.-]((19|[2-9]\d)\d{2})\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\d):(0[0-9]|[1-59]\d)\s(AM|am|PM|pm))|((0[13456789]|1[012])[\/\.-](0[1-9]|[12]\d|30)[\/\.-]((19|[2-9]\d)\d{2})\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\d):(0[0-9]|[1-59]\d)\s(AM|am|PM|pm))|((02)[\/\.-](0[1-9]|1\d|2[0-8])[\/\.-]((19|[2-9]\d)\d{2})\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\d):(0[0-9]|[1-59]\d)\s(AM|am|PM|pm))|((02)[\/\.-](29)[\/\.-]((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\d):(0[0-9]|[1-59]\d)\s(AM|am|PM|pm)))$/g"
-                        onChange={this.handleChange}/>
-                </div>
-                <div className="form-group">
-                    <label>Reason</label>
-                    <input 
-                        type="text"
-                        id="reason"
-                        name="reason"
-                        value={this.state.reason}
-                        onChange={this.handleChange}
-                    />
-                </div>
-                <div className="form-group">
-                    <label>Add Reminder</label>
-                    <input type="datetime-local"
-                        id="reminders"
-                        name="reminders"
-                        placeholder="YYYY-MM-DD HH:mm am/pm"
-                        pattern="/^(((0[13578]|1[02])[\/\.-](0[1-9]|[12]\d|3[01])[\/\.-]((19|[2-9]\d)\d{2})\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\d):(0[0-9]|[1-59]\d)\s(AM|am|PM|pm))|((0[13456789]|1[012])[\/\.-](0[1-9]|[12]\d|30)[\/\.-]((19|[2-9]\d)\d{2})\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\d):(0[0-9]|[1-59]\d)\s(AM|am|PM|pm))|((02)[\/\.-](0[1-9]|1\d|2[0-8])[\/\.-]((19|[2-9]\d)\d{2})\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\d):(0[0-9]|[1-59]\d)\s(AM|am|PM|pm))|((02)[\/\.-](29)[\/\.-]((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))\s(0[0-9]|1[0-2]):(0[0-9]|[1-59]\d):(0[0-9]|[1-59]\d)\s(AM|am|PM|pm)))$/g"
-                        onChange={this.handleChange}
-                    />
-                </div>
+                
             </div>
         )
     }
