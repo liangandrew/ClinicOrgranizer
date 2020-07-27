@@ -56,11 +56,14 @@ class Register extends Component {
             password: this.state.password,
             is_org: this.state.org,
         };
-        register(newUser).then((res) => {
+        register(newUser).then(res => {
+            console.log(res)
             if(res.success){
                 this.props.history.push("/login");
             }
-        });
+        }).catch(err=>{
+            console.log(err)
+        })
     };
 
     render() {
@@ -148,10 +151,9 @@ class Register extends Component {
 
                             <button
                                 type="submit"
-                                className="btn btn-lg btn-primary btn-block"
-                            >
+                                className="btn btn-lg btn-primary btn-block">
                                 Register
-              </button>
+                            </button>
                         </form>
                     </div>
                 </div>

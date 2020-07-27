@@ -10,7 +10,7 @@ export const register =(user)=>{
             email:user["email"],
             password:user["password"]
         }).then(res=>{
-            console.log("registered successfully")
+            return res.data
         }).catch(err=>{
             console.log(err)
         })
@@ -71,5 +71,21 @@ export const getAppointment=(id)=>{
         return res.data
     }).catch(err=>{
         console.log(err)
+    })
+}
+
+export const deleteAppointment=(id)=>{
+    return axios.delete('/api/appointments/delete/'+id,{withCredentials:true}).then(res=>{
+        console.log(res)
+        return res
+    }).catch(err=>{
+        console.log(err)
+    })
+}
+
+export const createAppointment=(apt)=>{
+    return axios.post('/api/make_appointment',
+    {
+
     })
 }
