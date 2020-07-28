@@ -91,3 +91,15 @@ export const createAppointment=(apt)=>{
         reason:apt.reason
     },{withCredentials:true})
 }
+
+export const createReminder=(rem)=>{
+    return axios.post('/api/reminder/create',
+    {
+        appointment_id:rem.id,
+        reminder:rem.reminder
+    },{withCredentials:true}).then(res=>{
+        return res
+    }).catch(err=>{
+        console.log(err)
+    })
+}

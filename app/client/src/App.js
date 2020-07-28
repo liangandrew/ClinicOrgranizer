@@ -8,7 +8,7 @@ import Navbar from "./components/Navbar";
 import Profile from "./components/Profile";
 import AppointmentScreen from "./components/AppointmentScreen";
 import NewAppointment from "./components/NewAppointment";
-import {getAppointments, deleteAppointment, createAppointment } from "./components/ApiFunctions";
+import {login, getAppointments, deleteAppointment, createAppointment, createReminder } from "./components/ApiFunctions";
 
 import axios from 'axios';
 
@@ -30,7 +30,6 @@ class App extends Component {
 
   checkAuth(){
     axios.get('/api/login/status',{withCredentials:true}).then(res=>{
-        console.log(res)
         if(res.data.logged_in && !this.state.logged_in){
             this.setState({
                 logged_in:true,
@@ -52,6 +51,7 @@ class App extends Component {
 
   componentDidMount(){
     this.checkAuth()
+    console.log(this.state)
   }
 
   componentDidUpdate(){
@@ -75,7 +75,7 @@ class App extends Component {
           logged_in:false,
           user_email:'',
           is_org:false
-      })
+        })
       }
       console.log("state after logging out")
       console.log(this.state)
@@ -84,25 +84,46 @@ class App extends Component {
     })
   }
 
-  handleLogin=()=>{
-    this.setState({logged_in:true})
+  handleLogin=(user)=>{
+    
+    login(user).then(res=>{
+      console.log(res)
+      if(res.success){
+        this.setState({
+          logged_in:true,
+          is_org:res.is_org,
+          user_email:res.user_email
+        })
+      }
+      // console.log(this.state)
+
+    })
   }
 
   handleDelete=(id)=>{
     deleteAppointment(id).then(res=>{
       console.log(res)
-      console.log(this.state)
+      if(res.data.success){
+        this.setState({edited_data:true})
+      }
     })
   }
 
   handleNewAppointment=(apt)=>{
     //make axios request to add appointment
-    //change state edited_data to rerender
+    //change state new_data to rerender
     createAppointment(apt).then(res=>{
       console.log(res)
       this.setState({new_data:true})
     }).catch(err=>{
       console.log(err)
+    })
+  }
+
+  handleNewReminder=(rem)=>{
+    createReminder(rem).then(res=>{
+      console.log(res)
+      this.setState({edited_data:true})
     })
   }
 
@@ -117,7 +138,7 @@ class App extends Component {
             <Route exact path="/login" render={(props) => <Login {...props} isAuthenticated={this.state.logged_in} appLogin={this.handleLogin}/>}  />
             <Route exact path="/profile" render={(props) => <Profile {...props} isAuthenticated={this.state.logged_in} appointments={this.state.appointments}/>} />
             <Route exact path="/make_appointment" render={(props) => <NewAppointment {...props} isAuthenticated={this.state.logged_in} is_org={this.state.is_org} user_email={this.state.user_email} createNewAppointment={this.handleNewAppointment} new_data={this.state.new_data}/>}/>
-            <Route path="/appointments/:id" render={(props) => <AppointmentScreen {...props} isAuthenticated={this.state.logged_in}/>} />
+            <Route path="/appointments/:id" render={(props) => <AppointmentScreen {...props} isAuthenticated={this.state.logged_in} handleNewReminder={this.handleNewReminder} handleDelete={this.handleDelete} edited_data={this.state.edited_data}/>} />
             <Route path="/:any" component={Welcome}/>
           </Switch>
         </div>

@@ -1,5 +1,4 @@
 import React, {Component} from 'react'
-import {login} from './ApiFunctions'
 import { Redirect } from "react-router-dom";
 
 
@@ -36,13 +35,7 @@ class Login extends Component{
             is_org:this.state.is_org
         };
         // console.log(user)
-        login(user).then(res=>{
-            console.log(res)
-            // if(res.success){
-            //     this.props.history.push('/profile')
-            // }
-            this.props.appLogin()
-        })
+        this.props.appLogin(user)
         
     }
 

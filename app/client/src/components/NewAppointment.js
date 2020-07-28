@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Redirect, Link} from 'react-router-dom';
+import {Redirect} from 'react-router-dom';
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from '@date-io/moment';
 import moment from 'moment';
@@ -18,14 +18,14 @@ class NewAppointment extends Component{
             e.target.type === "checkbox" ? e.target.checked : e.target.value;
         this.setState({ [e.target.name]: value });
         // console.log(e.target.value);
-        console.log(this.state);
+        // console.log(this.state);
     }
 
     handleDateChange=(date)=>{
         this.setState({
             start_time:date._d
         })
-        console.log(this.state.start_time)
+        // console.log(this.state.start_time)
     }
 
     handleSubmit=(e)=>{
@@ -46,7 +46,7 @@ class NewAppointment extends Component{
         }
         else if(!this.props.is_org){
             //orgs create the appointments, not patients
-            return <Redirect to="/"/>;
+            return <Redirect to="/profile"/>;
         }
         console.log(this.props.new_data)
         if(this.props.new_data){

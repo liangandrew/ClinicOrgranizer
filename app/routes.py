@@ -139,7 +139,7 @@ def org_login():
             # authenticate
             authenticate(org,True)
 
-            return jsonify({"success":True,"message":"Logged in successfully"}) 
+            return jsonify({"success":True,"message":"Logged in successfully",'user_email':session.get('user_email'),'is_org':session.get('is_org')}) 
         return jsonify({"success":False,"message":"Email and password do not match"})
     except Org.DoesNotExist:
         return jsonify({"success":False,"message":"Email is not registered"})
@@ -295,7 +295,7 @@ def get_single_appointment(id):
 @bp.route('/appointments/delete/<int:id>', methods=['DELETE'])
 def delete_appointment(id):
     if not session['logged_in']:
-        return jsonify({'result':'error'})
+        return jsonify({'success':False})
     else:
         try:
             org=Org.get(Org.email==session['user_email'])
@@ -351,7 +351,9 @@ def edit_appointment(id):
 def create_reminder():
     # pat=get_current_user()
     # if type(pat) is not Patient:
-    #     return jsonify({'result':'error'})
+    #     return jsonify({'success':False})
+    if not session['logged_in']:
+        return jsonify({'success':False})
     
     data=request.get_json()
     reminder=data['reminder']
@@ -371,6 +373,6 @@ def create_reminder():
         #update appointment reminders
         apt.reminders=reminders
         apt.save()
-        return jsonify({'result':'success'})
-    except DoesNotExist:
-        return jsonify({'result':'error'})
+        return jsonify({'success':True})
+    except:
+        return jsonify({'success':False})
