@@ -103,3 +103,16 @@ export const createReminder=(rem)=>{
         console.log(err)
     })
 }
+
+export const editAppointment=(edits)=>{
+    return axios.put('/api/appointments/edit/'+edits.id,
+    {
+        start_time:edits.start_time,
+        reason_for_visit:edits.reason_for_visit
+    },{withCredentials:true}).then(res=>{
+        console.log(res)
+        return res
+    }).catch(err=>{
+        console.log(err)
+    })
+}

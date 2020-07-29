@@ -8,7 +8,7 @@ import Navbar from "./components/Navbar";
 import Profile from "./components/Profile";
 import AppointmentScreen from "./components/AppointmentScreen";
 import NewAppointment from "./components/NewAppointment";
-import {login, getAppointments, deleteAppointment, createAppointment, createReminder } from "./components/ApiFunctions";
+import {login, getAppointments, deleteAppointment, createAppointment, createReminder, editAppointment } from "./components/ApiFunctions";
 
 import axios from 'axios';
 
@@ -127,6 +127,16 @@ class App extends Component {
     })
   }
 
+  handleEditAppointment=(edits)=>{
+    console.log(edits)
+    editAppointment(edits).then(res=>{
+      console.log(res)
+      this.setState({edited_data:true})
+    }).catch(err=>{
+      console.log(err)
+    })
+  }
+
   render() {
     return (
       <Router>
@@ -138,7 +148,7 @@ class App extends Component {
             <Route exact path="/login" render={(props) => <Login {...props} isAuthenticated={this.state.logged_in} appLogin={this.handleLogin}/>}  />
             <Route exact path="/profile" render={(props) => <Profile {...props} isAuthenticated={this.state.logged_in} appointments={this.state.appointments}/>} />
             <Route exact path="/make_appointment" render={(props) => <NewAppointment {...props} isAuthenticated={this.state.logged_in} is_org={this.state.is_org} user_email={this.state.user_email} createNewAppointment={this.handleNewAppointment} new_data={this.state.new_data}/>}/>
-            <Route path="/appointments/:id" render={(props) => <AppointmentScreen {...props} isAuthenticated={this.state.logged_in} handleNewReminder={this.handleNewReminder} handleDelete={this.handleDelete} edited_data={this.state.edited_data}/>} />
+            <Route path="/appointments/:id" render={(props) => <AppointmentScreen {...props} isAuthenticated={this.state.logged_in} handleNewReminder={this.handleNewReminder} handleDelete={this.handleDelete} handleEdit={this.handleEditAppointment}edited_data={this.state.edited_data}/>} />
             <Route path="/:any" component={Welcome}/>
           </Switch>
         </div>

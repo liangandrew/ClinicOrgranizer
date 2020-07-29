@@ -312,15 +312,15 @@ def delete_appointment(id):
 #orgs can edit appointment
 @bp.route('/appointments/edit/<int:id>',methods=['PUT'])
 def edit_appointment(id):
-    # if not session['logged_in']:
-    #     return jsonify({'result':'error'})
-    # else:
+    if not session['logged_in']:
+        return jsonify({'success':False})
+    else:
         try:
-            # org=Org.get(Org.email==session['user_email'])
-            org=Org.get(Org.email==request.get_json()['org_email'])
+            org=Org.get(Org.email==session['user_email'])
+            # org=Org.get(Org.email==request.get_json()['org_email'])
             appointment=Appointment.get_by_id(id)
             if appointment.o_id is not org.org_id:
-                return jsonify({'result':'error, apopintment not found'})
+                return jsonify({'success':False,'message':'error, apopintment not found'})
             
             data=request.get_json()
             #edit fields of the matching appointment to data from request
@@ -341,9 +341,10 @@ def edit_appointment(id):
             
             appointment.reminders=json.dumps(updated_reminders,default=str)
             appointment.save()
-            return jsonify({'result':'success'})
-        except DoesNotExist:
-            return jsonify({'result':'error'})
+            return jsonify({'success':True})
+        except Exception as e:
+            print(e)
+            return jsonify({'success':False})
 
 
 @bp.route('/reminder/create',methods=['POST'])

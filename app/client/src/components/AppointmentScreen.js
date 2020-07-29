@@ -90,6 +90,15 @@ class AppointmentScreen extends Component{
         this.props.handleDelete(this.state.id)
     }
 
+    handleEdit=()=>{
+        const edits={
+            id:this.state.id,
+            start_time:moment(this.state.start_time).format('YYYY-MM-DD HH:mm'),
+            reason_for_visit:this.state.reason
+        }
+        this.props.handleEdit(edits)
+    }
+
 
     render(){
         if(!this.props.isAuthenticated){
@@ -218,7 +227,7 @@ class AppointmentScreen extends Component{
                             <br/>
                             <div className="row">
                                 <div className="col">
-                                    <input type="button" value="Save Changes"/>
+                                    <input type="button" value="Save Changes" onClick={this.handleEdit}/>
                                 </div>
                                 <div className="col">
                                     <input type="button" value="Delete Appointment" onClick={this.handleDelete}/>
