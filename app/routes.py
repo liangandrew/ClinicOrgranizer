@@ -365,8 +365,8 @@ def create_reminder():
         #reminder from frontend will be string in format
         date=datetime.strptime(reminder,"%Y-%m-%d %H:%M").astimezone(pytz.UTC)
         #compare reminder date with curent date and appointment date. Should be in between
-
-        if date < apt.start_time:
+        aptstart=datetime.strptime(apt.start_time,"%Y-%m-%d %H:%M:%S%z")
+        if date < aptstart:
             reminders=json.loads(apt.reminders)
             reminders.append(date)
             reminders=json.dumps(reminders,default=str)
@@ -376,5 +376,6 @@ def create_reminder():
             apt.save()
             return jsonify({'success':True})
         return jsonify({'success':False})
-    except:
+    except Exception as e:
+        print(e)
         return jsonify({'success':False})
