@@ -365,14 +365,16 @@ def create_reminder():
         #reminder from frontend will be string in format
         date=datetime.strptime(reminder,"%Y-%m-%d %H:%M").astimezone(pytz.UTC)
         #compare reminder date with curent date and appointment date. Should be in between
-        
-        reminders=json.loads(apt.reminders)
-        reminders.append(date)
-        reminders=json.dumps(reminders,default=str)
 
-        #update appointment reminders
-        apt.reminders=reminders
-        apt.save()
-        return jsonify({'success':True})
+        if date < apt.start_time:
+            reminders=json.loads(apt.reminders)
+            reminders.append(date)
+            reminders=json.dumps(reminders,default=str)
+
+            #update appointment reminders
+            apt.reminders=reminders
+            apt.save()
+            return jsonify({'success':True})
+        return jsonify({'success':False})
     except:
         return jsonify({'success':False})
