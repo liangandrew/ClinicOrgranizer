@@ -58,21 +58,21 @@ class AppointmentScreen extends Component{
             e.target.type === "checkbox" ? e.target.checked : e.target.value;
         this.setState({ [e.target.name]: value });
         // console.log(e.target.value);
-        console.log(this.state);
+        // console.log(this.state);
     }
 
     handleDateChange=(date)=>{
         this.setState({
             start_time:date._d
         })
-        console.log(this.state.start_time)
+        // console.log(this.state.start_time)
     }
 
     handleReminderChange=(date)=>{
         this.setState({
             new_reminder:date._d
         })
-        console.log(this.state.start_time)
+        // console.log(this.state.start_time)
     }
 
     handleNewReminder=()=>{
@@ -86,7 +86,7 @@ class AppointmentScreen extends Component{
     }
 
     handleDelete=()=>{
-        console.log('delete appointment')
+        // console.log('delete appointment')
         this.props.handleDelete(this.state.id)
     }
 

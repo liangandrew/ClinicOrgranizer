@@ -110,7 +110,7 @@ export const editAppointment=(edits)=>{
         start_time:edits.start_time,
         reason_for_visit:edits.reason_for_visit
     },{withCredentials:true}).then(res=>{
-        console.log(res)
+        // console.log(res)
         return res
     }).catch(err=>{
         console.log(err)
