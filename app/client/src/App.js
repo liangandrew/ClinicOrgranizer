@@ -146,9 +146,9 @@ class App extends Component {
           <Switch>
             <Route exact path="/register" render={(props) => <Register {...props} isAuthenticated={this.state.logged_in}/>} />
             <Route exact path="/login" render={(props) => <Login {...props} isAuthenticated={this.state.logged_in} appLogin={this.handleLogin}/>}  />
-            <Route exact path="/profile" render={(props) => <Profile {...props} isAuthenticated={this.state.logged_in} appointments={this.state.appointments}/>} />
+            <Route exact path="/profile" render={(props) => <Profile {...props} isAuthenticated={this.state.logged_in} is_org={this.state.is_org} appointments={this.state.appointments}/>} />
             <Route exact path="/make_appointment" render={(props) => <NewAppointment {...props} isAuthenticated={this.state.logged_in} is_org={this.state.is_org} user_email={this.state.user_email} createNewAppointment={this.handleNewAppointment} new_data={this.state.new_data}/>}/>
-            <Route path="/appointments/:id" render={(props) => <AppointmentScreen {...props} isAuthenticated={this.state.logged_in} handleNewReminder={this.handleNewReminder} handleDelete={this.handleDelete} handleEdit={this.handleEditAppointment}edited_data={this.state.edited_data}/>} />
+            <Route path="/appointments/:id" render={(props) => <AppointmentScreen {...props} isAuthenticated={this.state.logged_in} is_org={this.state.is_org} handleNewReminder={this.handleNewReminder} handleDelete={this.handleDelete} handleEdit={this.handleEditAppointment}edited_data={this.state.edited_data}/>} />
             <Route path="/:any" component={Welcome}/>
           </Switch>
         </div>

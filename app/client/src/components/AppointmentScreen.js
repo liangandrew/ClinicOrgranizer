@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Redirect} from 'react-router-dom';
+import {Redirect, Link} from 'react-router-dom';
 import {getAppointment} from './ApiFunctions';
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from '@date-io/moment';
@@ -107,141 +107,278 @@ class AppointmentScreen extends Component{
         if(this.props.edited_data){
             return <Redirect to="/profile"/>;
         }
-        return(
-            <div className="container">
-                <div className="row">
-                    <div className="col-md-6 mt-5 mx-auto">
-                        <form onSubmit={this.handleSave}>
-                            <h2>Appointment {this.state.id} Details</h2>
-                            <br/>
-                            <div className="row">
-                                <div className="col">
-                                    <div className="form-group">
-                                        <label htmlFor="org">Organization</label>
-                                        <input 
-                                            readOnly 
-                                            value={this.state.org}
-                                            className="form-control"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="col">
-                                    <div className="form-group">
-                                        <label htmlFor="org_email">Organization Email</label>
-                                        <input 
-                                            readOnly 
-                                            value={this.state.org_email}
-                                            className="form-control"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <br/>
-                            <div className="row">
-                                <div className="col">
+        console.log(this.props.is_org)
+        if(this.props.is_org){
+            return(
+                <div className="container">
+                    <div className="row">
+                        <div className="col-md-6 mt-5 mx-auto">
+                            <form onSubmit={this.handleSave}>
+                                <h2>Appointment {this.state.id} Details</h2>
+                                <br/>
+                                <div className="row">
+                                    <div className="col">
                                         <div className="form-group">
-                                            <label htmlFor="patient">Patient</label>
+                                            <label htmlFor="org">Organization</label>
                                             <input 
                                                 readOnly 
-                                                value={this.state.patient}
+                                                value={this.state.org}
                                                 className="form-control"
                                             />
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="col">
+                                    <div className="col">
                                         <div className="form-group">
-                                            <label htmlFor="patient_email">Patient Email</label>
+                                            <label htmlFor="org_email">Organization Email</label>
                                             <input 
                                                 readOnly 
-                                                value={this.state.patient_email}
+                                                value={this.state.org_email}
                                                 className="form-control"
                                             />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <br/>
-                            <div className="form-group">
-                                <label htmlFor="start_time">Start Time</label>
-                                <MuiPickersUtilsProvider utils={MomentUtils}>
-                                    <DateTimePicker
-                                        name="start_time"
-                                        variant="inline"
-                                        ampm={true}
-                                        value={this.state.start_time}
-                                        onChange={this.handleDateChange}
-                                        onError={console.log}
-                                        disablePast={true}
-                                        format="YYYY-MM-DD hh:mm a"
+                                <br/>
+                                <div className="row">
+                                    <div className="col">
+                                            <div className="form-group">
+                                                <label htmlFor="patient">Patient</label>
+                                                <input 
+                                                    readOnly 
+                                                    value={this.state.patient}
+                                                    className="form-control"
+                                                />
+                                        </div>
+                                    </div>
+                                    <div className="col">
+                                            <div className="form-group">
+                                                <label htmlFor="patient_email">Patient Email</label>
+                                                <input 
+                                                    readOnly 
+                                                    value={this.state.patient_email}
+                                                    className="form-control"
+                                                />
+                                        </div>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div className="form-group">
+                                    <label htmlFor="start_time">Start Time</label>
+                                    <MuiPickersUtilsProvider utils={MomentUtils}>
+                                        <DateTimePicker
+                                            name="start_time"
+                                            variant="inline"
+                                            ampm={true}
+                                            value={this.state.start_time}
+                                            onChange={this.handleDateChange}
+                                            onError={console.log}
+                                            disablePast={true}
+                                            format="YYYY-MM-DD hh:mm a"
+                                        />
+                                    </MuiPickersUtilsProvider>
+                                </div>
+                                <br/>
+                                <div className="form-group">
+                                    <label htmlFor="reason">Reason For Appointment</label>
+                                    <input 
+                                        type="text"
+                                        className="form-control"
+                                        name="reason"
+                                        placeholder="optional"
+                                        value={this.state.reason}
+                                        onChange={this.handleChange}
                                     />
-                                </MuiPickersUtilsProvider>
-                            </div>
-                            <br/>
-                            <div className="form-group">
-                                <label htmlFor="reason">Reason For Appointment</label>
-                                <input 
-                                    type="text"
-                                    className="form-control"
-                                    name="reason"
-                                    placeholder="optional"
-                                    value={this.state.reason}
-                                    onChange={this.handleChange}
-                                />
-                            </div>
-                            <br/>
-                            <div className="row">
-                                <div className="col">
-                                    <span className="card-title col ">Current Reminders Set</span>
-                                    <ul className="list-group list-group-flush">
-                                        {this.state.reminders.length && this.state.reminders.map(rem=>{
-                                            let reminder_time=moment(rem).format('YYYY-MM-DD hh:mm a')
-                                            // console.log(start_time.toLocaleString())
-                                            return(
-                                                <li className="list-group-item" key={reminder_time}>
-                                                    <div className="row">
-                                                        <span className="">{reminder_time}</span>
-                                                    </div>
-                                                </li>
-                                            )
-                                        })}
-                                    </ul>
                                 </div>
-                                <div className="col">
-                                    <div className="form-group">
-                                        <label htmlFor="start_time">Create New Reminder</label>
-                                        <MuiPickersUtilsProvider utils={MomentUtils}>
-                                            <DateTimePicker
-                                                name="reminder_time"
-                                                variant="inline"
-                                                ampm={true}
-                                                value={this.state.new_reminder}
-                                                onChange={this.handleReminderChange}
-                                                onError={console.log}
-                                                disablePast={true}
-                                                format="YYYY-MM-DD hh:mm a"
-                                            />
-                                        </MuiPickersUtilsProvider>
-                                        <input type="button" value="Create Reminder" onClick={this.handleNewReminder}/>
+                                <br/>
+                                <div className="row">
+                                    <div className="col">
+                                        <span className="card-title col ">Current Reminders Set</span>
+                                        <ul className="list-group list-group-flush">
+                                            {this.state.reminders.length && this.state.reminders.map(rem=>{
+                                                let reminder_time=moment(rem).format('YYYY-MM-DD hh:mm a')
+                                                // console.log(start_time.toLocaleString())
+                                                return(
+                                                    <li className="list-group-item" key={reminder_time}>
+                                                        <div className="row">
+                                                            <span className="">{reminder_time}</span>
+                                                        </div>
+                                                    </li>
+                                                )
+                                            })}
+                                        </ul>
+                                    </div>
+                                    <div className="col">
+                                        <div className="form-group">
+                                            <label htmlFor="start_time">Create New Reminder</label>
+                                            <MuiPickersUtilsProvider utils={MomentUtils}>
+                                                <DateTimePicker
+                                                    name="reminder_time"
+                                                    variant="inline"
+                                                    ampm={true}
+                                                    value={this.state.new_reminder}
+                                                    onChange={this.handleReminderChange}
+                                                    onError={console.log}
+                                                    disablePast={true}
+                                                    format="YYYY-MM-DD hh:mm a"
+                                                />
+                                            </MuiPickersUtilsProvider>
+                                            <input type="button" value="Create Reminder" onClick={this.handleNewReminder}/>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <br/>
-                            <div className="row">
-                                <div className="col">
-                                    <input type="button" value="Save Changes" onClick={this.handleEdit}/>
+                                <br/>
+                                <div className="row">
+                                    <div className="col">
+                                        <input type="button" value="Save Changes" onClick={this.handleEdit}/>
+                                    </div>
+                                    <div className="col">
+                                        <input type="button" value="Delete Appointment" onClick={this.handleDelete}/>
+                                    </div>
                                 </div>
-                                <div className="col">
-                                    <input type="button" value="Delete Appointment" onClick={this.handleDelete}/>
-                                </div>
-                            </div>
-                            <br/>
-                            <br/>
-                        </form>
-
+                                <br/>
+                                <br/>
+                            </form>
+    
+                        </div>
                     </div>
+                    
                 </div>
-                
-            </div>
-        )
+            )
+        }
+        else{
+            return(
+                <div className="container">
+                    <div className="row">
+                        <div className="col-md-6 mt-5 mx-auto">
+                            <form onSubmit={this.handleSave}>
+                                <h2>Appointment {this.state.id} Details</h2>
+                                <br/>
+                                <div className="row">
+                                    <div className="col">
+                                        <div className="form-group">
+                                            <label htmlFor="org">Organization</label>
+                                            <input 
+                                                readOnly 
+                                                value={this.state.org}
+                                                className="form-control"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col">
+                                        <div className="form-group">
+                                            <label htmlFor="org_email">Organization Email</label>
+                                            <input 
+                                                readOnly 
+                                                value={this.state.org_email}
+                                                className="form-control"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div className="row">
+                                    <div className="col">
+                                            <div className="form-group">
+                                                <label htmlFor="patient">Patient</label>
+                                                <input 
+                                                    readOnly 
+                                                    value={this.state.patient}
+                                                    className="form-control"
+                                                />
+                                        </div>
+                                    </div>
+                                    <div className="col">
+                                            <div className="form-group">
+                                                <label htmlFor="patient_email">Patient Email</label>
+                                                <input 
+                                                    readOnly 
+                                                    value={this.state.patient_email}
+                                                    className="form-control"
+                                                />
+                                        </div>
+                                    </div>
+                                </div>
+                                <br/>
+                                <div className="form-group">
+                                    <label htmlFor="start_time">Start Time</label>
+                                    <MuiPickersUtilsProvider utils={MomentUtils}>
+                                        <DateTimePicker
+                                            name="start_time"
+                                            variant="inline"
+                                            ampm={true}
+                                            value={this.state.start_time}
+                                            disabled={true}
+                                            onError={console.log}
+                                            disablePast={true}
+                                            format="YYYY-MM-DD hh:mm a"
+                                        />
+                                    </MuiPickersUtilsProvider>
+                                </div>
+                                <br/>
+                                <div className="form-group">
+                                    <label htmlFor="reason">Reason For Appointment</label>
+                                    <input 
+                                        type="text"
+                                        className="form-control"
+                                        name="reason"
+                                        placeholder="optional"
+                                        value={this.state.reason}
+                                        readOnly
+                                    />
+                                </div>
+                                <br/>
+                                <div className="row">
+                                    <div className="col">
+                                        <span className="card-title col ">Current Reminders Set</span>
+                                        <ul className="list-group list-group-flush">
+                                            {this.state.reminders.length && this.state.reminders.map(rem=>{
+                                                let reminder_time=moment(rem).format('YYYY-MM-DD hh:mm a')
+                                                // console.log(start_time.toLocaleString())
+                                                return(
+                                                    <li className="list-group-item" key={reminder_time}>
+                                                        <div className="row">
+                                                            <span className="">{reminder_time}</span>
+                                                        </div>
+                                                    </li>
+                                                )
+                                            })}
+                                        </ul>
+                                    </div>
+                                    <div className="col">
+                                        <div className="form-group">
+                                            <label htmlFor="start_time">Create New Reminder</label>
+                                            <MuiPickersUtilsProvider utils={MomentUtils}>
+                                                <DateTimePicker
+                                                    name="reminder_time"
+                                                    variant="inline"
+                                                    ampm={true}
+                                                    value={this.state.new_reminder}
+                                                    onChange={this.handleReminderChange}
+                                                    onError={console.log}
+                                                    disablePast={true}
+                                                    format="YYYY-MM-DD hh:mm a"
+                                                />
+                                            </MuiPickersUtilsProvider>
+                                            <input type="button" value="Create Reminder" onClick={this.handleNewReminder}/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col">
+                                        <Link to="/profile">Back</Link>
+                                    </div>
+                                </div>
+                                <br/>
+                                <br/>
+                            </form>
+    
+                        </div>
+                    </div>
+                    
+                </div>
+            )
+        }
+        
     }
 
 }
