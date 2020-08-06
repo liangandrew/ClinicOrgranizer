@@ -7,7 +7,7 @@ from app.background import *
 import atexit
 
 # config_name = os.getenv('FLASK_CONFIG')
-app = create_app(__name__)
+application = create_app(__name__)
 
 
 if __name__ == '__main__':
@@ -17,4 +17,4 @@ if __name__ == '__main__':
 
     # Shut down the scheduler when exiting the app
     atexit.register(lambda: scheduler.shutdown())
-    app.run()
+    application.run()
