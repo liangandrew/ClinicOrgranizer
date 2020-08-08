@@ -6,7 +6,7 @@ def create_app(__name__):
     app = Flask(__name__,instance_relative_config=True)
     app.config.from_pyfile('config.py',silent=True)
     app.config.update(
-        SESSION_COOKIE_SECURE=True,
+        # SESSION_COOKIE_SECURE=True,
         SESSION_COOKIE_HTTPONLY=True,
         SESSION_COOKIE_SAMESITE='Lax',
     )
