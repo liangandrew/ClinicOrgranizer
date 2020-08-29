@@ -48,7 +48,7 @@ class NewAppointment extends Component{
             //orgs create the appointments, not patients
             return <Redirect to="/profile"/>;
         }
-        console.log(this.props.new_data)
+        // console.log(this.props.new_data)
         if(this.props.new_data){
             return <Redirect to="/profile"/>;
         }

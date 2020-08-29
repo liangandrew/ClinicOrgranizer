@@ -51,7 +51,7 @@ class App extends Component {
 
   componentDidMount(){
     this.checkAuth()
-    console.log(this.state)
+    // console.log(this.state)
   }
 
   componentDidUpdate(){
@@ -60,7 +60,7 @@ class App extends Component {
       getAppointments().then(data=>{
         if(data.success){
           this.setState({appointments:data.appointments, fetched_data:true, new_data:false,deleted_data:false,edited_data:false})
-          console.log(data)
+          // console.log(data)
         }
         
       })
@@ -69,7 +69,7 @@ class App extends Component {
 
   navbarLogout=()=>{
     axios.get('/api/logout',{withCredentials:true}).then(res=>{
-      console.log(res)
+      // console.log(res)
       if(res.data.success){
         this.setState({
           logged_in:false,
@@ -77,8 +77,7 @@ class App extends Component {
           is_org:false
         })
       }
-      console.log("state after logging out")
-      console.log(this.state)
+      // console.log(this.state)
       }).catch(err=>{
         console.log(err)
     })
@@ -87,7 +86,7 @@ class App extends Component {
   handleLogin=(user)=>{
     
     login(user).then(res=>{
-      console.log(res)
+      // console.log(res)
       if(res.success){
         this.setState({
           logged_in:true,
@@ -95,14 +94,13 @@ class App extends Component {
           user_email:res.user_email
         })
       }
-      // console.log(this.state)
 
     })
   }
 
   handleDelete=(id)=>{
     deleteAppointment(id).then(res=>{
-      console.log(res)
+      // console.log(res)
       if(res.data.success){
         this.setState({edited_data:true})
       }
@@ -113,7 +111,7 @@ class App extends Component {
     //make axios request to add appointment
     //change state new_data to rerender
     createAppointment(apt).then(res=>{
-      console.log(res)
+      // console.log(res)
       this.setState({new_data:true})
     }).catch(err=>{
       console.log(err)
@@ -122,15 +120,14 @@ class App extends Component {
 
   handleNewReminder=(rem)=>{
     createReminder(rem).then(res=>{
-      console.log(res)
+      // console.log(res)
       this.setState({edited_data:true})
     })
   }
 
   handleEditAppointment=(edits)=>{
-    console.log(edits)
     editAppointment(edits).then(res=>{
-      console.log(res)
+      // console.log(res)
       this.setState({edited_data:true})
     }).catch(err=>{
       console.log(err)

@@ -24,7 +24,7 @@ class AppointmentScreen extends Component{
         this._isMounted = true;
         const {id} = this.props.match.params;
         getAppointment(id).then(res=>{
-            console.log(res)
+            // console.log(res)
             if(res.success && this._isMounted){
                 let start=moment(res.appointment.start_time)
                 let new_rem=moment()
@@ -39,7 +39,7 @@ class AppointmentScreen extends Component{
                     reminders:JSON.parse(res.appointment.reminders),
                     new_reminder:new_rem
                 })
-                console.log(this.state)
+                // console.log(this.state)
             }
             else{
                 this.setState({deleted:true})
@@ -107,7 +107,7 @@ class AppointmentScreen extends Component{
         if(this.props.edited_data){
             return <Redirect to="/profile"/>;
         }
-        console.log(this.props.is_org)
+        // console.log(this.props.is_org)
         if(this.props.is_org){
             return(
                 <div className="container">

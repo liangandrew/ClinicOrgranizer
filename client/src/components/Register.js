@@ -57,7 +57,7 @@ class Register extends Component {
             is_org: this.state.org,
         };
         register(newUser).then(res => {
-            console.log(res)
+            // console.log(res)
             if(res.success){
                 this.props.history.push("/login");
             }
